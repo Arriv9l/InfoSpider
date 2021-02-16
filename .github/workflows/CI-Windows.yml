@@ -4,8 +4,6 @@
 name: CI on Windows
 
 on:
-  push:
-    branches: [ master ]
   workflow_dispatch:
 
 jobs:
@@ -17,10 +15,10 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    - name: Set up Python 3.9
+    - name: Set up Python 3.6
       uses: actions/setup-python@v2
       with:
-        python-version: 3.9
+        python-version: 3.6
 
     - name: Install dependencies
       run: |
@@ -31,10 +29,10 @@ jobs:
     - name: Pyinstaller
       run: |
         pip install pyinstaller
-        pyinstaller --windowed --onefile --clean -y --dist ./ --workpath /tmp tools/main.py
+        pyinstaller --windowed --onefile --clean tools/main.py
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2.2.2
       with:
         name: InfoSpider
-        path: main.exe
+        path: .
