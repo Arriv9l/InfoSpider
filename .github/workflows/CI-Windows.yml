@@ -1,7 +1,7 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: CI on Windows
+name: virtualenv
 
 on:
   workflow_dispatch:
@@ -16,26 +16,30 @@ jobs:
     - uses: actions/checkout@v2
 
     # 实测发现需要用 3.6 或以下版本，否则会有冲突
-    - name: Set up Python 3.6
+    - name: Set up Python 3.7
       uses: actions/setup-python@v2
       with:
-        python-version: 3.6
+        python-version: 3.7
+
+    - name: Install Virtualenv
+      run: |
+        python -m pip install --upgrade pip
+        pip install virtualenv
+
+    - name: Activate Virtualenv
+      run: |
+        virtualenv venv
+        venv/Scripts/activate.bat
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
         pip install -U wheel
         pip install tornado
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       shell: bash
 
-    - name: Pyinstaller
-      run: |
-        pip install pyinstaller
-        pyinstaller --onefile --clean -y --dist ./ --workpath /tmp tools/main.py
-
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2.2.2
       with:
         name: InfoSpider
-        path: main.exe
+        path: .
