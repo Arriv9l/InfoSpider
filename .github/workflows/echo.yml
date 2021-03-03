@@ -56,17 +56,30 @@ jobs:
     - name: Set Matrix
       id: set-matrix
       env:
-        paths: ${{ steps.get-paths.outputs.paths }}
+        PATHS: ${{ steps.get-paths.outputs.paths }}
+      if: ${{ env.PATHS != '[]' }}
       run: |
-        flag=$([ $paths != "[]" ] && echo true || echo false)
-        matrix=$($flag && echo $paths || echo "[tmp]")
-        echo "flag: $flag"
-        echo "matrix: $matrix"
-        echo "::set-output name=flag::$flag"
-        echo "::set-output name=matrix::$matrix"
+        JSON="{\"paths\":["
+
+        # Loop by lines
+        while read path; do
+        # Add item to the matrix only if it is not already included
+        JSONline="\"$path\","
+        if [[ "$JSON" != *"$JSONline"* ]]; then
+        JSON="$JSON$JSONline"
+        fi
+        done <<< "$PATHS"
+
+        # Remove last "," and add closing brackets
+        if [[ $JSON == *, ]]; then
+        JSON="${JSON%?}"
+        fi
+        JSON="$JSON]}"
+        echo "json: $JSON"
+        echo "::set-output name=matrix::$( echo "$JSON" )"
+
 
   Publish:
-    if: ${{ needs.Prerequisites.outputs.flag == 'true' }}
     runs-on: ubuntu-latest
     needs: Prerequisites
     strategy:
