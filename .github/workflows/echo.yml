@@ -46,17 +46,17 @@ jobs:
           fi
         done
         echo "paths: $paths"
-        unique_paths=$(echo ${paths[@]} | tr ' ' '\n' | sort -u | paste -sd ", " -)
+        unique_paths=[$(echo ${paths[@]} | tr ' ' '\n' | sort -u | paste -sd ", " -)]
         echo "unique_paths: $unique_paths"
         echo "::set-output name=paths::$unique_paths"
 
   Publish:
     runs-on: ubuntu-latest
     needs: Prerequisites
-    if: ${{ needs.Prerequisites.outputs.paths }} != ""
+    if: ${{ needs.Prerequisites.outputs.paths }} != "[]"
     strategy:
       matrix:
-        path: [${{ needs.Prerequisites.outputs.paths }}]
+        path: ${{ needs.Prerequisites.outputs.paths }}
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
