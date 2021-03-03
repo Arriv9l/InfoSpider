@@ -28,7 +28,7 @@ jobs:
         before: ${{ github.event.before }}
         after: ${{ github.event.after }}
       run: |
-        res=$( curl -s "https://api.github.com/repos/$repository/compare/$before...$after" )
+        res=$( curl -s "https://api.github.com/repos/Arriv9l/InfoSpider/compare/28f0820fed838a9176e84c157f0e7a7e8482d336...a0282a6923a2d99d28bc3a3d8d5b1b8aaed75a21" )
         sudo apt-get install jq
         filenames=$( echo $res | jq '[.files[].filename]' )
         echo "filenames: $filenames"
@@ -49,7 +49,7 @@ jobs:
           fi
         done
         echo "paths: ${paths[@]}"
-        unique_paths=[$(echo ${paths[@]} | tr ' ' '\n' | sort -u | paste -sd ", " -)]
+        unique_paths=[$(echo ${paths[@]} | tr ' ' '\n' | sort -u | paste -sd "," -)]
         echo "unique_paths: $unique_paths"
         echo "::set-output name=paths::$unique_paths"
 
@@ -70,11 +70,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: Prerequisites
     strategy:
-      matrix: ${{ fromJson(needs.Prerequisites.outputs.matrix )}}
+      matrix: ${{ fromJson(needs.Prerequisites.outputs.matrix) }}
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
       - name: Echo
-        run: echo ${{ matrix.path }}
+        run: |
+          echo "matrix: ${{ toJson(matrix) }}"
+          echo "path: ${{ matrix.path }}"
