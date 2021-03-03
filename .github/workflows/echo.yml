@@ -30,8 +30,9 @@ jobs:
       run: |
         res=$( curl -s "https://api.github.com/repos/Arriv9l/InfoSpider/compare/6753960f366a51bd20cb0f5e8942c673635b44e7...87181649893813d26a8a00bbc9e0ccf5e7114502" )
         sudo apt-get install jq
-        filenames=$( echo $res | jq '.files[].filename' | tr -d '"' )
-        echo "::set-output name=filenames::$( echo "\"$filenames\"" )"
+        filenames=$( echo $res | jq '[.files[].filename]' )
+        echo "filenames: $filenames"
+        echo "::set-output name=filenames::$( echo $filenames )"
 
     - name: Get Paths
       id: get-paths
