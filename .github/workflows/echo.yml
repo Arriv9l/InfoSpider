@@ -19,7 +19,9 @@ jobs:
       run: echo "$GITHUB_CONTEXT"
       
     - name: Echo
+      env:
+        repository: ${{ github.repository }}
+        before: ${{ github.event.before }}
+        after: ${{ github.event.after }}
       run: |
-        echo "base_ref: ${{ github.event.base_ref }}"
-        echo "before: ${{ github.event.before }}"
-        echo "commits: ${{ github.event.commits }}"
+        curl "https://api.github.com/repos/$repository/compare/$before...$after"
