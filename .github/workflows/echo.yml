@@ -28,7 +28,7 @@ jobs:
         before: ${{ github.event.before }}
         after: ${{ github.event.after }}
       run: |
-        res=$( curl -s "https://api.github.com/repos/Arriv9l/InfoSpider/compare/28f0820fed838a9176e84c157f0e7a7e8482d336...a0282a6923a2d99d28bc3a3d8d5b1b8aaed75a21" )
+        res=$( curl -s "https://api.github.com/repos/$repository/compare/$before...$after" )
         sudo apt-get install jq
         filenames=$( echo $res | jq '[.files[].filename]' )
         echo "filenames: $filenames"
@@ -37,13 +37,10 @@ jobs:
     - name: Get Paths
       id: get-paths
       run: |
-        echo "filenames: ${{ steps.get-filenames.outputs.filenames }}"
         paths=()
         for each in ${{ steps.get-filenames.outputs.filenames }}
         do
-          echo "each: $each"
           path=$(echo $each | { grep -Po 'part[0-9]/.+?(?=/)' || true; })
-          echo "path: $path"
           if [[ $path != "" ]]; then
             paths+=($path)
           fi
@@ -64,11 +61,11 @@ jobs:
 
         # Loop by lines
         while read path; do
-        # Add item to the matrix only if it is not already included
-        JSONline="\"$path\","
-        if [[ "$JSON" != *"$JSONline"* ]]; then
-        JSON="$JSON$JSONline"
-        fi
+          # Add item to the matrix only if it is not already included
+          JSONline="\"$path\","
+          if [[ "$JSON" != *"$JSONline"* ]]; then
+          JSON="$JSON$JSONline"
+          fi
         done <<< "$PATHS"
 
         # Remove last "," and add closing brackets
@@ -94,3 +91,21 @@ jobs:
         run: |
           echo "matrix: ${{ toJson(matrix) }}"
           echo "path: ${{ matrix.path }}"
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - name: Install and Build 🔧
+        run: |
+          cd ${{ matrix.path }}
+          yarn
+          yarn build
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@4.0.0
+        with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: ${{ matrix.path }}/build # The folder the action should deploy.
+          target-folder: ${{ matrix.path }}
+          clean: false
