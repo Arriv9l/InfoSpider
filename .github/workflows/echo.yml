@@ -12,16 +12,35 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-    
+
     - name: Dump GitHub context
       env:
         GITHUB_CONTEXT: ${{ toJson(github) }}
       run: echo "$GITHUB_CONTEXT"
-      
-    - name: Echo
+
+    - name: Get Filenames
+      id: get-filenames
       env:
         repository: ${{ github.repository }}
         before: ${{ github.event.before }}
         after: ${{ github.event.after }}
       run: |
-        curl "https://api.github.com/repos/$repository/compare/$before...$after"
+        res=$(curl "https://api.github.com/repos/$repository/compare/$before...$after")
+        filenames=$($res | jq '.files[].filename')
+        echo "::set-output name=filenames::$filenames"
+
+    - name: array
+      id: arr
+      run: |
+        echo "filenames: ${{ steps.get-filenames.outputs.filenames }}"
+        arr=()
+        for i in ${{ steps.get-filenames.outputs.filenames }}
+        do
+          if [[ $i == *"path1"* ]]; then
+            arr+=("path1")
+          fi
+          if [[ $i == *"path2"* ]]; then
+            arr+=("path2")
+          fi
+        done
+        echo ::set-output name=arr::${arr[@]}
