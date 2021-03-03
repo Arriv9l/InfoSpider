@@ -48,7 +48,7 @@ jobs:
             paths+=($path)
           fi
         done
-        echo "paths: $paths"
+        echo "paths: ${paths[@]}"
         unique_paths=[$(echo ${paths[@]} | tr ' ' '\n' | sort -u | paste -sd ", " -)]
         echo "unique_paths: $unique_paths"
         echo "::set-output name=paths::$unique_paths"
@@ -60,6 +60,8 @@ jobs:
       run: |
         flag=$([ $paths != "[]" ] && echo true || echo false)
         matrix=$($flag && echo $paths || echo "[tmp]")
+        echo "flag: $flag"
+        echo "matrix: $matrix"
         echo "::set-output name=flag::$flag"
         echo "::set-output name=matrix::$matrix"
 
