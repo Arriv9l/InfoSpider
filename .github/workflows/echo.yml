@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       paths: ${{ steps.get-paths.outputs.paths }}
+      flag: ${{ needs.Prerequisites.outputs.paths }} != "[]"
 
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -53,10 +54,13 @@ jobs:
   Publish:
     runs-on: ubuntu-latest
     needs: Prerequisites
-    if: ${{ needs.Prerequisites.outputs.paths }} != "[]"
+    env:
+      paths: ${{ needs.Prerequisites.outputs.paths }}
+      flag: ${{ needs.Prerequisites.outputs.flag }}
+    if: $flag
     strategy:
       matrix:
-        path: ${{ needs.Prerequisites.outputs.paths }}
+        path: $($flag && echo "[tmp]" || echo $paths)
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
