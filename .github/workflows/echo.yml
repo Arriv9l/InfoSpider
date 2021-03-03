@@ -8,6 +8,8 @@ on:
 jobs:
   Prerequisites:
     runs-on: ubuntu-latest
+    outputs:
+      paths: ${{ steps.get-paths.outputs.paths }}
 
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -53,7 +55,7 @@ jobs:
     needs: Prerequisites
     strategy:
       matrix:
-        path: ${{ steps.get-paths.outputs.paths }}
+        path: ${{needs.Prerequisites.outputs.paths}}
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
