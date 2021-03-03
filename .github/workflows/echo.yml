@@ -58,10 +58,9 @@ jobs:
     env:
       paths: ${{ needs.Prerequisites.outputs.paths }}
       flag: ${{ needs.Prerequisites.outputs.flag }}
-      tmp: $(echo "[tmp]")
+      matrix: $(echo "[tmp]")
     strategy:
-      matrix:
-        path: ${{ echo "[tmp]" }}
+      matrix: ${{ echo "path: [tmp]" }}
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
