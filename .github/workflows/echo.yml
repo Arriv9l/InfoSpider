@@ -34,7 +34,6 @@ jobs:
       id: get-paths
       run: |
         paths=()
-        echo "filenames: ${{ steps.get-filenames.outputs.filenames }}"
         for each in ${{ steps.get-filenames.outputs.filenames }}
         do
           path=$(echo $each | grep -Po 'part[0-9]/.+?(?=/)')
@@ -43,6 +42,6 @@ jobs:
             paths+=($path)
           fi
         done
-        unique_paths=$(echo ${arr[@]} | tr ' ' '\n' | sort -u)
+        unique_paths=$(echo ${paths[@]} | tr ' ' '\n' | sort -u)
         echo "unique_paths: $unique_paths"
         echo "::set-output name=paths::$unique_paths"
