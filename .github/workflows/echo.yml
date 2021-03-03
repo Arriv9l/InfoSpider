@@ -60,7 +60,7 @@ jobs:
     if: $flag
     strategy:
       matrix:
-        path: echo "[tmp]"
+        path: $(echo "[tmp]")
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
