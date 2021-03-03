@@ -99,7 +99,7 @@ jobs:
         run: |
           cd ${{ matrix.path }}
           yarn
-          PUBLIC_URL=${{ github.event.repository.name }}/${{ matrix.path }} yarn build
+          PUBLIC_URL=./ yarn build
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.0.0
