@@ -9,7 +9,6 @@ jobs:
   Prerequisites:
     runs-on: ubuntu-latest
     outputs:
-      flag: ${{ steps.set-matrix.outputs.flag }}
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
     steps:
@@ -100,7 +99,7 @@ jobs:
         run: |
           cd ${{ matrix.path }}
           yarn
-          yarn build
+          PUBLIC_URL=${{ github.event.repository.name }}/${{ matrix.path }} yarn build
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.0.0
