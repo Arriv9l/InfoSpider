@@ -57,7 +57,7 @@ jobs:
       id: set-matrix
       env:
         PATHS: ${{ steps.get-paths.outputs.paths }}
-      if: ${{ env.PATHS != "" }}
+      if: ${{ env.PATHS != '' }}
       run: |
         JSON="{\"path\":["
 
