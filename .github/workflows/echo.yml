@@ -49,7 +49,7 @@ jobs:
           fi
         done
         echo "paths: ${paths[@]}"
-        unique_paths=[$(echo ${paths[@]} | tr ' ' '\n' | sort -u | paste -sd "," -)]
+        unique_paths=$( echo ${paths[@]} | tr ' ' '\n' | sort -u )
         echo "unique_paths: $unique_paths"
         echo "::set-output name=paths::$unique_paths"
 
@@ -57,9 +57,9 @@ jobs:
       id: set-matrix
       env:
         PATHS: ${{ steps.get-paths.outputs.paths }}
-      if: ${{ env.PATHS != '[]' }}
+      if: ${{ env.PATHS != "" }}
       run: |
-        JSON="{\"paths\":["
+        JSON="{\"path\":["
 
         # Loop by lines
         while read path; do
