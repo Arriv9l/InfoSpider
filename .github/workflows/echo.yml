@@ -34,8 +34,7 @@ jobs:
       id: get-paths
       run: |
         paths=()
-        echo "filenames: ${{ steps.get-filenames.outputs.filenames }}"
-        for each in ${{ steps.get-filenames.outputs.filenames }}
+        for each in "${{ steps.get-filenames.outputs.filenames }}"
         do
           path=$(echo $each | grep -Po 'part[0-9]/.+?(?=/)')
           echo "path: $path"
