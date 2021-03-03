@@ -43,5 +43,5 @@ jobs:
           fi
         done
         unique_paths=$(echo ${arr[@]} | tr ' ' '\n' | sort -u)
-        echo "unique_paths: $unique_paths"
+        echo "unique_paths- $unique_paths"
         echo ::set-output name=paths::$unique_paths
