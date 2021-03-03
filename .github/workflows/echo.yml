@@ -26,6 +26,7 @@ jobs:
         after: ${{ github.event.after }}
       run: |
         res=$(curl "https://api.github.com/repos/$repository/compare/$before...$after")
+        sudo apt-get install jq
         filenames=$($res | jq '.files[].filename')
         echo "::set-output name=filenames::$filenames"
 
