@@ -46,7 +46,7 @@ jobs:
           fi
         done
         echo "paths: $paths"
-        unique_paths=[$(echo ${paths[@]} | tr ' ' '\n' | sort -u | tr '\n' ', ')]
+        unique_paths=[$(echo ${paths[@]} | tr ' ' '\n' | sort -u | paste -sd ", " -)]
         echo "unique_paths: $unique_paths"
         echo "::set-output name=paths::$unique_paths"
 
@@ -55,7 +55,7 @@ jobs:
     needs: Prerequisites
     strategy:
       matrix:
-        path: ${{needs.Prerequisites.outputs.paths}}
+        path: ${{ needs.Prerequisites.outputs.paths }}
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
