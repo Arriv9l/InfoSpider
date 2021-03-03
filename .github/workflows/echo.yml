@@ -1,0 +1,25 @@
+name: test
+
+on:
+  push:
+    branches: [ test ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+    
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
+      
+    - name: Echo
+      run: |
+        echo "base_ref: ${{ github.event.base_ref }}"
+        echo "before: ${{ github.event.before }}"
+        echo "commits: ${{ github.event.commits }}"
