@@ -56,7 +56,6 @@ jobs:
           //console.log(context)
           //console.log(process.env)
           console.log( core.getInput('files') )
-          console.log( ${{ core.getInput('files').*.filenames }} )
           const paths = []
           const filenames = ${{ steps.get-filenames.outputs.filenames }}
           console.log(`filenames: ${filenames}`)
