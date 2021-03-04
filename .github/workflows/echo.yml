@@ -51,9 +51,9 @@ jobs:
         for each in ${{ steps.get-filenames.outputs.filenames }}
         do
           path=$(echo $each | { grep -Po 'part[0-9]/.+?(?=/)' || true; })
-          echo "tset: ${{path}}"
-          echo "hashFiles: ${{ hashFiles(${{ path }}) }}"
-          if [[ $path != '' && ${{ hashFiles(${{ path }}) != '' }} ]]; then
+          echo "tset: ${{INPUT_path}}"
+          echo "hashFiles: ${{ hashFiles(${{ INPUT_path }}) }}"
+          if [[ $path != '' && ${{ hashFiles(${{ INPUT_path }}) != '' }} ]]; then
             paths+=($path)
           fi
         done
