@@ -52,8 +52,8 @@ jobs:
         do
           path=$(echo $each | { grep -Po 'part[0-9]/.+?(?=/)' || true; })
           echo "tset: $path"
-          echo "hashFiles: ${{ hashFiles(path) }}"
-          if [[ $path != '' && ${{ hashFiles(path) != '' }} ]]; then
+          echo "env: ${{ toJson(env) }}"
+          if [[ $path != '' ]]; then
             paths+=($path)
           fi
         done
