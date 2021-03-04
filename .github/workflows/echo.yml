@@ -53,18 +53,8 @@ jobs:
                     .map(x => x.filename.match(/part\d\/.+?(?=\/)/))
                     .filter(Boolean)
           console.log(`paths1: ${paths}`)
-          paths = paths.filter((item, index, array) => {
-                    console.log(`item: ${item}, index: ${index}, indexOf: ${array.indexOf(item)}`)
-                    console.log(array.indexOf(item) === index)
-                    return array.indexOf(item) === index;
-                })
-          console.log(`paths2: ${paths}`)
-          console.log(`paths[0]: ${paths[0]}`)
           unique = []
-          a = [1,2,3,1,2,3,"1","1","2"]
-          console.log(a)
-          console.log(Array.isArray(a))
-          a.forEach(x => {
+          paths.forEach(x => {
             if (!unique.includes(x))
               unique.push(x)
           })
