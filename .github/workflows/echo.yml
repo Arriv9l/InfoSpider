@@ -49,9 +49,10 @@ jobs:
       id: get-paths
       uses: actions/github-script@v3
       with:
+        filenames: ${{ steps.get-filenames.outputs.filenames }}
         script: |
           //console.log(context)
-          console.log(process.env)
+          //console.log(process.env)
           const paths = []
           const filenames = core.getInput('filenames');
           console.log(`filenames: ${filenames}`)
