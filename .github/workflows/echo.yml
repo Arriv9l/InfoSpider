@@ -16,13 +16,9 @@ jobs:
         with:
           node-version: 12
 
-      - name: init
-        run: |
-          npm init -y
-
       - name: run
         run: |
-          npm install @actions/core fs
+          npm install @actions/core fs request
           node index.js
 
 

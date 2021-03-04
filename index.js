@@ -1,5 +1,6 @@
 const core = require('@actions/core')
 const fs = require('fs')
+const request = require('request');
 
 function getJSON(url) {
     return new Promise((resolve, reject) => {
