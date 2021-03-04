@@ -16,7 +16,14 @@ jobs:
         with:
           node-version: 12
 
+      - name: test
+        run: echo "::set-output name=before::123"
+
       - name: run
+        env:
+          repository: ${{ github.repository }} # The owner and repository name. For example, Codertocat/Hello-World.
+          before: ${{ github.event.before }}
+          after: ${{ github.event.after }}
         run: |
           npm install @actions/core fs request
           node index.js
