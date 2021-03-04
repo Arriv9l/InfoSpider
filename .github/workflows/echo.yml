@@ -87,6 +87,8 @@ jobs:
               unique.push(x)
           })
           console.log(`unique: ${unique}`)
+          a = [...new Set(a)];
+          console.log(`a: ${a}`)
           paths = paths.filter(x => {
                       core.exportVariable('x', x)
                       console.log(${{ env.x }})
