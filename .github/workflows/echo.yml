@@ -56,6 +56,7 @@ jobs:
                     })
           console.log(`paths: ${paths}`)
           core.setOutput('paths', paths)
+          console.log(`length: ${paths.length}`)
           core.setOutput('flag', paths.length ? true : false)
 
     - name: Set Matrix
@@ -63,7 +64,8 @@ jobs:
       uses: actions/github-script@v3
       env:
         PATH: ${{ steps.get-paths.outputs.paths }}
-      if: ${{ steps.get-paths.outputs.flag != 'true' }}
+        FLAG: ${{ steps.get-paths.outputs.flag }}
+      if: ${{ env.FLAG }}
       with:
         script: |
           console.log(${{ steps.get-paths.outputs.flag }})
