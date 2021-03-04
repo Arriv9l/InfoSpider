@@ -76,7 +76,7 @@ jobs:
           console.log(`json: ${json}`)
           b = []
           json['files'].forEach(x => {
-            t = x['filename'].match(/part\d\/.+?(?=\/)/)
+            t = x['filename'].substr(0,7)
             if (!b.includes(t))
               b.push(t)
           })
