@@ -46,7 +46,7 @@ jobs:
           //console.log(context)
           //console.log(process.env)
           //const result = await github.request("https://api.github.com/repos/${{ env.repository }}/compare/${{ env.before }}...${{ env.after }}")
-          const result = await github.request("https://api.github.com/repos/${{ env.repository }}/compare/c0d46e25dbc30132101b82a0c4aa5640ec1f277d...b599af9617f141478751cb9495074688536eeaeb")
+          const result = await github.request("https://api.github.com/repos/Arriv9l/InfoSpider/compare/9f5494bacdc72ad92f7805816bec7cd24649276e...c0d46e25dbc30132101b82a0c4aa5640ec1f277d")
           //console.log(result.data)
           //console.log(result.data.files)
           paths = result.data.files
