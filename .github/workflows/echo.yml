@@ -73,7 +73,7 @@ jobs:
           //console.log(result.data)
           //console.log(result.data.files)
           paths = result.data.files
-                    .map(x => x['filename'].match(/part\d\/.+?(?=\/)/g)[0])
+                    .map(x => (x['filename'].match(/part\d\/.+?(?=\/)/) || [])[0])
                     .filter(Boolean)
           console.log(`paths1: ${paths}`)
           paths = [...new Set(paths)];
