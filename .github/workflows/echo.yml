@@ -18,7 +18,7 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    # https://stackoverflow.com/a/61861763
+    # 来自 https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#wdautohl_id_22:~:text=Dump%20GitHub%20context
     # 关于 Actions 的 Contexts 上下文信息见 https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
     - name: Dump GitHub context
       env:
@@ -37,12 +37,13 @@ jobs:
         before: ${{ github.event.before }}
         after: ${{ github.event.after }}
       # 关于 CLI Parse JSON，可以用 jq，教程见 https://stedolan.github.io/jq/tutorial/
+      # 由于 $filenames 中有空格，所以在 set-output 时
+      # 不能直接用 $filenames，而应该用 $( echo $filenames )
       run: |
         res=$( curl -s "https://api.github.com/repos/Arriv9l/InfoSpider/compare/28f0820fed838a9176e84c157f0e7a7e8482d336...a0282a6923a2d99d28bc3a3d8d5b1b8aaed75a21" )
-        sudo apt-get install jq
         filenames=$( echo $res | jq '.files[].filename' )
         echo "filenames: $filenames"
-        echo "::set-output name=filenames::$filenames"
+        echo "::set-output name=filenames::$( echo $filenames )"
 
     - name: Get Paths
       id: get-paths
@@ -50,10 +51,10 @@ jobs:
         paths=()
         for each in ${{ steps.get-filenames.outputs.filenames }}
         do
-          path=$(echo $each | { grep -Po 'part[0-9]/.+?(?=/)' || true; })
+          echo "path=$(echo $each | { grep -Po 'part[0-9]/.+?(?=/)' || true; })" >> $GITHUB_ENV
           echo "tset: $path"
-          echo "env: ${{ toJson(env) }}"
-          if [[ $path != '' ]]; then
+          echo "hash: hashFiles(env.path)"
+          if [[ $path != '' && hashFiles(env.path) != '' ]]; then
             paths+=($path)
           fi
         done
