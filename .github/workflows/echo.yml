@@ -44,9 +44,10 @@ jobs:
         script: |
           const result = await github.request("https://api.github.com/repos/Arriv9l/InfoSpider/compare/28f0820fed838a9176e84c157f0e7a7e8482d336...a0282a6923a2d99d28bc3a3d8d5b1b8aaed75a21")
           console.log(result.data)
-          console.log(JSON.parse(result)["files"])
-          files = JSON.parse(result)["files"]
-          core.setOutput('files', files)
+          console.log(result.files)
+          console.log(result.files*.filename)
+          filenames = result.files*.filename
+          core.setOutput('filenames', filenames)
 
     - name: Get Paths
       id: get-paths
@@ -55,7 +56,7 @@ jobs:
         script: |
           //console.log(context)
           //console.log(process.env)
-          console.log( core.getInput('files') )
+          console.log( core.getInput('filenames') )
           const paths = []
           const filenames = ${{ steps.get-filenames.outputs.filenames }}
           console.log(`filenames: ${filenames}`)
