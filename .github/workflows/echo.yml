@@ -50,24 +50,23 @@ jobs:
           paths = result.data.files
                     .map(x => x.filename.match(/part\d\/.+?(?=\/)/))
                     .filter(Boolean)
-          console.log(`paths: ${paths}`)
-          paths = paths.filter(x => {
-            core.exportVariable('x', x);
-            console.log( ${{ hashFiles(env.x) }} )
-            return ${{ hashFiles(env.x) != '' }}
-          })
+                    .filter(x => {
+                      core.exportVariable('x', x);
+                      return ${{ hashFiles(env.x) != '' }}
+                    })
+          if (paths.length) return false
           console.log(`paths: ${paths}`)
           core.setOutput('paths', paths)
 
     - name: Set Matrix
       id: set-matrix
-      env:
-        PATHS: ${{ steps.get-paths.outputs.paths }}
-      if: ${{ env.PATHS != '' }}
-      run: |
-        const matrix = {}
-        matrix.path = ${{ env.PATHS }}
-        core.setOutput('matrix', matrix)
+      uses: actions/github-script@v3
+      if: ${{ success() }}
+      with:
+        script: |
+          const matrix = {}
+          matrix.path = ${{ steps.get-paths.outputs.paths }}
+          core.setOutput('matrix', JSON.stringify(matrix))
 
 
   Publish:
