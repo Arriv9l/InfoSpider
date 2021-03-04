@@ -49,13 +49,11 @@ jobs:
           const result = await github.request("https://api.github.com/repos/Arriv9l/InfoSpider/compare/9f5494bacdc72ad92f7805816bec7cd24649276e...c0d46e25dbc30132101b82a0c4aa5640ec1f277d")
           //console.log(result.data)
           //console.log(result.data.files)
-          paths = result.data.files.map(x => x.filename)
-          console.log(`paths0: ${paths}`)
-          paths = paths.map(x => x.match(/part\d\/.+?(?=\/)/))
+          paths = result.data.files
+                    .map(x => x.filename.match(/part\d\/.+?(?=\/)/))
                     .filter(Boolean)
           console.log(`paths1: ${paths}`)
-          console.log(Array.isArray(paths))
-          unique = (a) => [...new Set(a)]
+          unique = (array) => Array.from(new Set(array))
           paths = unique(paths)
           console.log(`paths2: ${paths}`)
           paths = paths.filter(x => {
