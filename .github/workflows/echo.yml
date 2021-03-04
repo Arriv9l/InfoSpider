@@ -59,6 +59,14 @@ jobs:
                     return array.indexOf(item) === index;
                 })
           console.log(`paths2: ${paths}`)
+          console.log(`paths[0]: ${paths[0]}`)
+          unique = []
+          paths.forEach(x => {
+            if (!unique.includes(x))
+              unique.push(x)
+          })
+          console.log(`unique: ${unique}`)
+          console.log(${{ hashFiles(format('{0}',paths[0])) }})
           paths = paths.filter(x => {
                       core.exportVariable('x', x)
                       console.log(${{ env.x }})
