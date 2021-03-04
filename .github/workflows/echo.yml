@@ -49,19 +49,18 @@ jobs:
       id: get-paths
       uses: actions/github-script@v3
       with:
-        filenames: ${{ steps.get-filenames.outputs.filenames }}
         script: |
           //console.log(context)
           //console.log(process.env)
           const paths = []
-          const filenames = core.getInput('filenames');
+          const filenames = ${{ steps.get-filenames.outputs.filenames }}
           console.log(`filenames: ${filenames}`)
           console.log( filenames.match(/part\d\/.+?(?=\/)/g) )
           for (const name of filenames) {
             console.log(`name: ${name}`)
             path = name.match(/part\d\/.+?(?=\/)/)
             console.log(`path: ${path}`)
-            paths.append(path)
+            paths.push(path)
           }
           console.log(`paths: ${paths}`)
           const unique = (a) => [...new Set(a)]
