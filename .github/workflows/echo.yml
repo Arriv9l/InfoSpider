@@ -52,9 +52,9 @@ jobs:
                     .filter(Boolean)
           console.log(`paths: ${paths}`)
           paths = paths.filter(x => {
-            core.setOutput('x', x)
-            console.log( ${{ hashFiles( core.getInput('x') }} )
-            return ${{ hashFiles(core.getInput('x')) != '' }}
+            core.exportVariable('x', x);
+            console.log( ${{ hashFiles(env.x) }} )
+            return ${{ hashFiles(env.x) != '' }}
           })
           console.log(`paths: ${paths}`)
           core.setOutput('paths', paths)
