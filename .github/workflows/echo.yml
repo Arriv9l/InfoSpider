@@ -54,7 +54,6 @@ jobs:
                       core.exportVariable('x', x);
                       return ${{ hashFiles(env.x) != '' }}
                     })
-          if (paths.length == 0) return false
           console.log(`paths: ${paths}`)
           core.setOutput('paths', paths)
 
