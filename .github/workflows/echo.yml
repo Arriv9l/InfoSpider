@@ -86,10 +86,10 @@ jobs:
           node-version: 12
 
       - name: test
-        run: echo ${{ hashFiles(matrix.path/README.md) }}
+        run: echo ${{ hashFiles(format('{0}/README.md', matrix.path)) }}
 
       - name: Add README 📝
-        if: ${{ hashFiles(matrix.path/README.md) != '' }}
+        if: ${{ hashFiles(format('{0}/README.md', matrix.path)) != '' }}
         run: |
           cd ${{ matrix.path }}
           echo "##Preview\nhttps://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ matrix.path }}" >> README.md
