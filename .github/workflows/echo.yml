@@ -89,7 +89,7 @@ jobs:
           script: |
             const fs = require('fs')
             const readme = '${{ matrix.path }}/README.md'
-            const text = '##Preview\nhttps://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ matrix.path }}'
+            const text = '##Preview\r\nhttps://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ matrix.path }}'
             fs.writeFileSync(readme, text)
 
       - name: Auto Commit 📝
