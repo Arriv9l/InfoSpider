@@ -45,9 +45,6 @@ jobs:
           const result = await github.request("https://api.github.com/repos/Arriv9l/InfoSpider/compare/28f0820fed838a9176e84c157f0e7a7e8482d336...a0282a6923a2d99d28bc3a3d8d5b1b8aaed75a21")
           //console.log(result.data)
           console.log(result.data.files)
-          console.log(result.data.files.*.filename)
-          filenames = result.data.files.*.filename
-          core.setOutput('filenames', filenames)
 
     - name: Get Paths
       id: get-paths
