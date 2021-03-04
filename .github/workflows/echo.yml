@@ -30,8 +30,8 @@ jobs:
     # 在 PUSH 中可以通过 ${{ github.event.commits.*.added }} 来获取 added,modified,removed 文件的
     # 但是根据 https://github.blog/changelog/2019-10-16-changes-in-github-actions-push-event-payload/
     # 这三个属性已经被删除了，所以只能用 https://docs.github.com/en/rest/reference/repos#compare-two-commits
-    - name: Get Filenames
-      id: get-filenames
+    - name: Get Paths
+      id: get-paths
       uses: actions/github-script@v3
       env:
         repository: ${{ github.repository }} # The owner and repository name. For example, Codertocat/Hello-World.
@@ -42,36 +42,21 @@ jobs:
       # 不能直接用 $filenames，而应该用 $( echo $filenames )
       with:
         script: |
+          //console.log(context)
+          //console.log(process.env)
           const result = await github.request("https://api.github.com/repos/Arriv9l/InfoSpider/compare/28f0820fed838a9176e84c157f0e7a7e8482d336...a0282a6923a2d99d28bc3a3d8d5b1b8aaed75a21")
           //console.log(result.data)
           //console.log(result.data.files)
-          filenames = result.data.files.map(x => x.filename)
-          console.log(`filenames: ${filenames}`)
-          core.setOutput('filenames', filenames)
-
-    - name: Get Paths
-      id: get-paths
-      uses: actions/github-script@v3
-      with:
-        script: |
-          //console.log(context)
-          //console.log(process.env)
-          console.log( core.getInput('filenames') )
-          const paths = []
-          const filenames = ${{ steps.get-filenames.outputs.filenames }}
-          console.log(`filenames: ${filenames}`)
-          console.log( filenames.match(/part\d\/.+?(?=\/)/g) )
-          for (const name of filenames) {
-            console.log(`name: ${name}`)
-            path = name.match(/part\d\/.+?(?=\/)/)
-            console.log(`path: ${path}`)
-            paths.push(path)
-          }
+          paths = result.data.files
+                    .map(x => x.filename.match(/part\d\/.+?(?=\/)/))
+                    .filter(Boolean)
           console.log(`paths: ${paths}`)
-          const unique = (a) => [...new Set(a)]
-          unique_paths = unique(paths)
-          console.log(`unique_paths: ${unique_paths}`)
-          core.setOutput('paths', unique_paths)
+          paths = paths.filter(x => {
+            console.log( ${{ hashFiles(x) }} )
+            return ${{ hashFiles(x) != '' }}
+          })
+          console.log(`paths: ${paths}`)
+          core.setOutput('paths', paths)
 
     - name: Set Matrix
       id: set-matrix
@@ -79,24 +64,9 @@ jobs:
         PATHS: ${{ steps.get-paths.outputs.paths }}
       if: ${{ env.PATHS != '' }}
       run: |
-        JSON="{\"path\":["
-
-        # Loop by lines
-        while read path; do
-          # Add item to the matrix only if it is not already included
-          JSONline="\"$path\","
-          if [[ "$JSON" != *"$JSONline"* ]]; then
-          JSON="$JSON$JSONline"
-          fi
-        done <<< "$PATHS"
-
-        # Remove last "," and add closing brackets
-        if [[ $JSON == *, ]]; then
-        JSON="${JSON%?}"
-        fi
-        JSON="$JSON]}"
-        echo "json: $JSON"
-        echo "::set-output name=matrix::$JSON"
+        const matrix = {}
+        matrix.path = ${{ env.PATHS }}
+        core.setOutput('matrix', matrix)
 
 
   Publish:
