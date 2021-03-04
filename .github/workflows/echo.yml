@@ -8,6 +8,9 @@ on:
 jobs:
   Prerequisites:
     runs-on: ubuntu-latest
+    # steps 之间传递数据可以通过 ${{ steps.step1.outputs.test }}
+    # 而 jobs 之间传递则需要靠 ${{needs.job1.outputs.output1}}
+    # 具体见 https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idoutputs
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
@@ -15,21 +18,29 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
+    # https://stackoverflow.com/a/61861763
+    # 关于 Actions 的 Contexts 上下文信息见 https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
     - name: Dump GitHub context
       env:
         GITHUB_CONTEXT: ${{ toJson(github) }}
       run: echo "$GITHUB_CONTEXT"
 
+    # 本来根据 https://docs.github.com/en/developers/webhooks-and-events/webhook-events-and-payloads#push
+    # 和 https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#object-filters
+    # 在 PUSH 中可以通过 ${{ github.event.commits.*.added }} 来获取 added,modified,removed 文件的
+    # 但是根据 https://github.blog/changelog/2019-10-16-changes-in-github-actions-push-event-payload/
+    # 这三个属性已经被删除了，所以只能用 https://docs.github.com/en/rest/reference/repos#compare-two-commits
     - name: Get Filenames
       id: get-filenames
       env:
-        repository: ${{ github.repository }}
+        repository: ${{ github.repository }} # The owner and repository name. For example, Codertocat/Hello-World.
         before: ${{ github.event.before }}
         after: ${{ github.event.after }}
+      # 关于 CLI Parse JSON，可以用 jq，教程见 https://stedolan.github.io/jq/tutorial/
       run: |
-        res=$( curl -s "https://api.github.com/repos/$repository/compare/$before...$after" )
+        res=$( curl --silent "https://api.github.com/repos/$repository/compare/$before...$after" )
         sudo apt-get install jq
-        filenames=$( echo $res | jq '[.files[].filename]' )
+        filenames=$( echo $res | jq '.files[].filename' )
         echo "filenames: $filenames"
         echo "::set-output name=filenames::$( echo $filenames )"
 
@@ -40,7 +51,7 @@ jobs:
         for each in ${{ steps.get-filenames.outputs.filenames }}
         do
           path=$(echo $each | { grep -Po 'part[0-9]/.+?(?=/)' || true; })
-          if [[ $path != "" ]]; then
+          if [[ $path != '' && hashFiles($path) != '' ]]; then
             paths+=($path)
           fi
         done
@@ -86,11 +97,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: Echo
-        run: |
-          echo "matrix: ${{ toJson(matrix) }}"
-          echo "path: ${{ matrix.path }}"
-
       - uses: actions/setup-node@v2
         with:
           node-version: 12
@@ -104,7 +110,7 @@ jobs:
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.0.0
         with:
-          branch: gh-pages # The branch the action should deploy to.
-          folder: ${{ matrix.path }}/build # The folder the action should deploy.
+          branch: gh-pages
+          folder: ${{ matrix.path }}/build
           target-folder: ${{ matrix.path }}
           clean: false
