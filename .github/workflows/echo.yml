@@ -61,11 +61,13 @@ jobs:
     - name: Set Matrix
       id: set-matrix
       uses: actions/github-script@v3
-      if: ${{ success() }}
+      env:
+        PATH: ${{ steps.get-paths.outputs.paths }}
+      if: ${{ join(env.PATH) != '' }}
       with:
         script: |
           const matrix = {}
-          matrix.path = ${{ steps.get-paths.outputs.paths }}
+          matrix.path = ${{ env.PATH }}
           core.setOutput('matrix', JSON.stringify(matrix))
 
 
