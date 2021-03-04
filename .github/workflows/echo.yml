@@ -58,14 +58,14 @@ jobs:
           console.log(`paths: ${paths}`)
           console.log(`length: ${paths.length}`)
           core.setOutput('paths', paths)
-          core.setOutput('flag', paths.length ? true : false)
+          core.setOutput('flag', paths.length ? 'true' : 'false')
 
     - name: Set Matrix
       id: set-matrix
       uses: actions/github-script@v3
       env:
         FLAG: ${{ steps.get-paths.outputs.flag }}
-      if: ${{ steps.get-paths.outputs.flag == true }}
+      if: ${{ steps.get-paths.outputs.flag == 'true' }}
       with:
         script: |
           const matrix = {}
