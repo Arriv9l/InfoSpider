@@ -94,7 +94,7 @@ jobs:
 
       - name: Auto Commit 📝
         uses: EndBug/add-and-commit@v7
-        if: ${{ hashFiles(format('{0}/README.md', matrix.path)) == '' }}
+        if: ${{ success() }}
         with:
           message: '📝 Auto add README'
           add: '${{ matrix.path }}/README.md'
