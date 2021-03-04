@@ -65,7 +65,7 @@ jobs:
       env:
         PATH: ${{ steps.get-paths.outputs.paths }}
         FLAG: ${{ steps.get-paths.outputs.flag }}
-      if: ${{ env.FLAG }}
+      if: ${{ env.FLAG == true }}
       with:
         script: |
           console.log(${{ steps.get-paths.outputs.flag }})
