@@ -42,7 +42,7 @@ jobs:
         sudo apt-get install jq
         filenames=$( echo $res | jq '.files[].filename' )
         echo "filenames: $filenames"
-        echo "::set-output name=filenames::$( echo $filenames )"
+        echo "::set-output name=filenames::$filenames"
 
     - name: Get Paths
       id: get-paths
