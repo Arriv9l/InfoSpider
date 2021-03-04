@@ -86,14 +86,17 @@ jobs:
         with:
           node-version: 12
 
-      - name: test
-        run: echo ${{ hashFiles(format('{0}/README.md', matrix.path)) }}
-
       - name: Add README 📝
-        if: ${{ hashFiles(format('{0}/README.md', matrix.path)) != '' }}
-        run: |
-          cd ${{ matrix.path }}
-          echo "##Preview\nhttps://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ matrix.path }}" >> README.md
+        uses: actions/github-script@v3
+        if: ${{ hashFiles(format('{0}/README.md', matrix.path)) == '' }}
+        with:
+          script: |
+            const fs = require('fs')
+            const readme = "${{ matrix.path }}/README.md"
+            if (!fs.existsSync(readme)) {
+              const text = "##Preview\nhttps://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ matrix.path }}"
+              fs.writeFileSync(readme, text)
+            }
 
       - name: Install and Build 🔧
         run: |
