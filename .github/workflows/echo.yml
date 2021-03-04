@@ -52,7 +52,8 @@ jobs:
         for each in ${{ steps.get-filenames.outputs.filenames }}
         do
           echo "path=$(echo $each | { grep -Po 'part[0-9]/.+?(?=/)' || true; })" >> $GITHUB_ENV
-          echo "test: $path"
+          echo "test: ${{ env.path }}"
+          echo "env: ${{ toJson(env) }}"
           echo "hash: ${{ hashFiles(env.path) }}"
           if [[ $path != '' && ${{ hashFiles(env.path) != '' }} ]]; then
             paths+=($path)
