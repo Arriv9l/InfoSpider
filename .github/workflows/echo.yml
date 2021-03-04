@@ -53,8 +53,7 @@ jobs:
                     .map(x => x.filename.match(/part\d\/.+?(?=\/)/))
                     .filter(Boolean)
           console.log(`paths1: ${paths}`)
-          unique = (array) => Array.from(new Set(array))
-          paths = unique(paths)
+          paths = Array.from(new Set(paths))
           console.log(`paths2: ${paths}`)
           paths = paths.filter(x => {
                       core.exportVariable('x', x)
