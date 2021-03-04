@@ -45,7 +45,8 @@ jobs:
         script: |
           //console.log(context)
           //console.log(process.env)
-          const result = await github.request("https://api.github.com/repos/${{ env.repository }}/compare/${{ env.before }}...${{ env.after }}")
+          //const result = await github.request("https://api.github.com/repos/${{ env.repository }}/compare/${{ env.before }}...${{ env.after }}")
+          const result = await github.request("https://api.github.com/repos/${{ env.repository }}/compare/c0d46e25dbc30132101b82a0c4aa5640ec1f277d...b599af9617f141478751cb9495074688536eeaeb")
           //console.log(result.data)
           //console.log(result.data.files)
           paths = result.data.files
