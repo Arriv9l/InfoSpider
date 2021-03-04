@@ -74,7 +74,14 @@ jobs:
           //console.log(result.data.files)
           json = JSON.parse(JSON.stringify(result.data))
           console.log(`json: ${json}`)
-          paths = json['files'].map(x => x.filename)
+          b = []
+          json['files'].forEach(x => {
+            t = x['filename']
+            if (!b.includes(t))
+              b.push(t)
+          })
+          console.log(`b: ${b}`)
+          paths = [1,2,3]
           paths = Array.from(paths)
                     .map(x => x.match(/part\d\/.+?(?=\/)/))
                     .filter(Boolean)
