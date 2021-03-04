@@ -59,7 +59,7 @@ jobs:
           console.log(`paths2: ${paths}`)
           paths = paths.filter(x => {
                       core.exportVariable('x', x)
-                      console.log(${{ env.x) }})
+                      console.log(${{ env.x }})
                       console.log(${{ format('{0}',env.x) }})
                       console.log(${{ hashFiles(format('{0}',env.x)) }})
                       console.log(${{ hashFiles('env.x') }})
