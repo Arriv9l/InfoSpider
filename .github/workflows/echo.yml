@@ -19,11 +19,10 @@ jobs:
       - name: init
         run: |
           npm init -y
-          npm config set save false
 
       - name: run
         run: |
-          npm install -g @actions/core fs
+          npm install @actions/core fs
           node index.js
 
 
