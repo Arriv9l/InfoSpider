@@ -47,23 +47,24 @@ jobs:
 
     - name: Get Paths
       id: get-paths
-      run: |
-        paths=()
-        for each in ${{ steps.get-filenames.outputs.filenames }}
-        do
-          echo "path=$(echo $each | { grep -Po 'part[0-9]/.+?(?=/)' || true; })" >> $GITHUB_ENV
-          echo "test: ${{ env.path }}"
-          echo "env: ${{ toJson(env) }}"
-          echo "hash: ${{ hashFiles(env.path) }}"
-          if [[ $path != '' && ${{ hashFiles(env.path) != '' }} ]]; then
-            paths+=($path)
-          fi
-        done
-        echo "paths: ${paths[@]}"
-        # Escape newlines (replace \n with %0A)
-        unique_paths=$( echo ${paths[@]} | tr ' ' '\n' | sort -u | sed ':a;N;$!ba;s/\n/%0A/g' )
-        echo "unique_paths: $unique_paths"
-        echo "::set-output name=paths::$unique_paths"
+      uses: actions/github-script@v3
+      with:
+        script: |
+          console.log(context)
+          const paths = []
+          const filenames = core.getInput('filenames');
+          console.log( filenames.match(/part\d\/.+?(?=\/)/g) )
+          for (const name of filenames) {
+            console.log(`name: ${name}`)
+            path = name.match(/part\d\/.+?(?=\/)/)
+            console.log(`path: ${path}`)
+            paths.append(path)
+          }
+          console.log(`paths: ${paths}`)
+          const unique = (a) => [...new Set(a)]
+          unique_paths = unique(paths)
+          console.log(`unique_paths: ${unique_paths}`)
+          core.setOutput('paths', unique_paths)
 
     - name: Set Matrix
       id: set-matrix
