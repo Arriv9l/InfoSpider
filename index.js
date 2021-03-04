@@ -17,6 +17,7 @@ function getJSON(url) {
     const before = core.getInput('before');
     const after = core.getInput('after');
     console.log(`repository: ${repository}`);
+    console.log(`before: ${before}`);
     const url = `https://api.github.com/repos/${repository}/compare/${before}...${after}`
     const json = JSON.parse(await getJSON(url));
     const files = json['files'];
