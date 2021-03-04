@@ -52,9 +52,10 @@ jobs:
           paths = result.data.files
                     .map(x => x.filename.match(/part\d\/.+?(?=\/)/))
                     .filter(Boolean)
+          console.log(`paths1: ${paths}`)
           unique = (a) => [...new Set(a)]
           paths = unique(paths)
-          console.log(paths)
+          console.log(`paths2: ${paths}`)
           paths = paths.filter(x => {
                       core.exportVariable('x', x)
                       console.log(${{ format('{0}',env.x) }})
@@ -62,7 +63,7 @@ jobs:
                       console.log(${{ hashFiles('env.x') }})
                       return ${{ hashFiles(env.x) != '' }}
                     })
-          console.log(paths)
+          console.log(`paths3: ${paths}`)
           core.setOutput('paths', paths)
           core.setOutput('flag', paths.length ? true : false)
 
