@@ -82,25 +82,25 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 12
-
       - name: Add README 📝
         uses: actions/github-script@v3
         if: ${{ hashFiles(format('{0}/README.md', matrix.path)) == '' }}
         with:
           script: |
             const fs = require('fs')
-            const readme = "${{ matrix.path }}/README.md"
-            if (!fs.existsSync(readme)) {
-              const text = "##Preview\nhttps://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ matrix.path }}"
-              fs.writeFileSync(readme, text)
-            }
+            const readme = '${{ matrix.path }}/README.md'
+            const text = '##Preview\nhttps://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ matrix.path }}'
+            fs.writeFileSync(readme, text)
+
+      - name: Auto Commit 📝
+        uses: EndBug/add-and-commit@v7
+        if: ${{ hashFiles(format('{0}/README.md', matrix.path)) == '' }}
+        with:
+          message: '📝 Auto add README'
+          add: '${{ matrix.path }}/README.md'
 
       - name: Install and Build 🔧
         run: |
-          echo $(pwd)
           cd ${{ matrix.path }}
           yarn
           PUBLIC_URL=./ yarn build
