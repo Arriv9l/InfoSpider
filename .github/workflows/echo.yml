@@ -6,29 +6,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  Test:
-    runs-on: ubuntu-latest
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 12
-
-      - name: test
-        run: echo "::set-output name=before::123"
-
-      - name: run
-        env:
-          repository: ${{ github.repository }} # The owner and repository name. For example, Codertocat/Hello-World.
-          before: ${{ github.event.before }}
-          after: ${{ github.event.after }}
-        run: |
-          npm install @actions/core fs request
-          node index.js
-
-
   Prerequisites:
     runs-on: ubuntu-latest
     # steps 之间传递数据可以通过 ${{ steps.step1.outputs.test }}
@@ -76,18 +53,9 @@ jobs:
           paths = result.data.files
                     .map(x => (x['filename'].match(/part\d\/.+?(?=\/)/) || [])[0])
                     .filter(Boolean)
-          paths = [...new Set(paths)];
-          console.log(`paths2: ${paths}`)
-          console.log(fs.existsSync('part1/1.1'))
-          paths = paths.filter(x => {
-                      core.exportVariable('x', x)
-                      console.log(${{ env.x }})
-                      console.log(${{ format('{0}',env.x) }})
-                      console.log(${{ hashFiles(format('{0}',env.x)) }})
-                      console.log(${{ hashFiles('env.x') }})
-                      return ${{ hashFiles(env.x) != '' }}
-                    })
-          console.log(`paths3: ${paths}`)
+                    .filter((item, index, array) => array.indexOf(item) === index)
+                    .filter(x => fs.existsSync(x))
+          console.log(`paths: ${paths}`)
           core.setOutput('paths', paths)
           core.setOutput('flag', paths.length ? true : false)
 
