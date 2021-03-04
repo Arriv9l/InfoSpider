@@ -16,9 +16,13 @@ jobs:
         with:
           node-version: 12
 
+      - name: init
+        run: |
+          npm init -y
+          npm config set save false
+
       - name: run
         run: |
-          npm config set save false
           npm install -g @actions/core, fs
           node index.js
 
