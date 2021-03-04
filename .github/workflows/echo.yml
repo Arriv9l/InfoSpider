@@ -63,8 +63,6 @@ jobs:
     - name: Set Matrix
       id: set-matrix
       uses: actions/github-script@v3
-      env:
-        FLAG: ${{ steps.get-paths.outputs.flag }}
       if: ${{ steps.get-paths.outputs.flag == 'true' }}
       with:
         script: |
@@ -76,7 +74,7 @@ jobs:
   Deploy:
     runs-on: ubuntu-latest
     needs: Prerequisites
-    if: ${{ needs.Prerequisites.outputs.flag == true }}
+    if: ${{ needs.Prerequisites.outputs.flag == 'true' }}
     strategy:
       matrix: ${{ fromJson(needs.Prerequisites.outputs.matrix) }}
 
