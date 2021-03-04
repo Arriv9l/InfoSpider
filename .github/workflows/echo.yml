@@ -18,7 +18,8 @@ jobs:
 
       - name: run
         run: |
-          npm -g install @actions/core, fs
+          npm config set save false
+          npm install -g @actions/core, fs
           node index.js
 
 
