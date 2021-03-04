@@ -12,6 +12,7 @@ jobs:
     # 而 jobs 之间传递则需要靠 ${{needs.job1.outputs.output1}}
     # 具体见 https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idoutputs
     outputs:
+      flag: ${{ steps.get-paths.outputs.flag }}
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
     steps:
@@ -56,27 +57,23 @@ jobs:
                     })
           console.log(`paths: ${paths}`)
           core.setOutput('paths', paths)
-          console.log(`length: ${paths.length}`)
           core.setOutput('flag', paths.length ? true : false)
 
     - name: Set Matrix
       id: set-matrix
       uses: actions/github-script@v3
-      env:
-        PATH: ${{ steps.get-paths.outputs.paths }}
-        FLAG: ${{ steps.get-paths.outputs.flag }}
-      if: ${{ env.FLAG == true }}
+      if: ${{ steps.get-paths.outputs.flag == true }}
       with:
         script: |
-          console.log(${{ steps.get-paths.outputs.flag }})
           const matrix = {}
-          matrix.path = ${{ env.PATH }}
+          matrix.path = ${{ steps.get-paths.outputs.paths }}
           core.setOutput('matrix', JSON.stringify(matrix))
 
 
   Publish:
     runs-on: ubuntu-latest
     needs: Prerequisites
+    if: ${{ needs.Prerequisites.outputs.flag == true }}
     strategy:
       matrix: ${{ fromJson(needs.Prerequisites.outputs.matrix) }}
 
