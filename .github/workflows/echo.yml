@@ -52,8 +52,10 @@ jobs:
           paths = result.data.files
                     .map(x => x.filename.match(/part\d\/.+?(?=\/)/))
                     .filter(Boolean)
-                    .filter(x => {
+          console.log(`paths: ${paths}`)
+          paths = paths.filter(x => {
                       core.exportVariable('x', x)
+                      console.log(${{ hashFiles(env.x) }})
                       return ${{ hashFiles(env.x) != '' }}
                     })
           console.log(`paths: ${paths}`)
