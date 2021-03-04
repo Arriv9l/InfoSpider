@@ -53,10 +53,13 @@ jobs:
                     .map(x => x.filename.match(/part\d\/.+?(?=\/)/))
                     .filter(Boolean)
           console.log(`paths1: ${paths}`)
-          paths = Array.from(new Set(paths))
+          paths = paths.filter((item, index, array) => {
+                    return array.indexOf(item) === index;
+                })
           console.log(`paths2: ${paths}`)
           paths = paths.filter(x => {
                       core.exportVariable('x', x)
+                      console.log(${{ env.x) }})
                       console.log(${{ format('{0}',env.x) }})
                       console.log(${{ hashFiles(format('{0}',env.x)) }})
                       console.log(${{ hashFiles('env.x') }})
