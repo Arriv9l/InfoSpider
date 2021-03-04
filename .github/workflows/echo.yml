@@ -66,7 +66,7 @@ jobs:
       # 不能直接用 $filenames，而应该用 $( echo $filenames )
       with:
         script: |
-          import * as fs from 'fs'
+          const fs = require('fs')
           //console.log(context)
           //console.log(process.env)
           //const result = await github.request("https://api.github.com/repos/${{ env.repository }}/compare/${{ env.before }}...${{ env.after }}")
