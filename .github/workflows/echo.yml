@@ -63,9 +63,10 @@ jobs:
       uses: actions/github-script@v3
       env:
         PATH: ${{ steps.get-paths.outputs.paths }}
-      if: ${{ steps.get-paths.outputs.flag }}
+      if: ${{ steps.get-paths.outputs.flag != 'true' }}
       with:
         script: |
+          console.log(${{ steps.get-paths.outputs.flag }})
           const matrix = {}
           matrix.path = ${{ env.PATH }}
           core.setOutput('matrix', JSON.stringify(matrix))
