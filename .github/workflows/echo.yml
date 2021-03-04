@@ -50,9 +50,11 @@ jobs:
       uses: actions/github-script@v3
       with:
         script: |
-          console.log(context)
+          //console.log(context)
+          console.log(process.env)
           const paths = []
           const filenames = core.getInput('filenames');
+          console.log(`filenames: ${filenames}`)
           console.log( filenames.match(/part\d\/.+?(?=\/)/g) )
           for (const name of filenames) {
             console.log(`name: ${name}`)
