@@ -45,7 +45,7 @@ jobs:
         script: |
           //console.log(context)
           //console.log(process.env)
-          const result = await github.request("https://api.github.com/repos/Arriv9l/InfoSpider/compare/28f0820fed838a9176e84c157f0e7a7e8482d336...a0282a6923a2d99d28bc3a3d8d5b1b8aaed75a21")
+          const result = await github.request("https://api.github.com/repos/$repository/compare/$before...$after")
           //console.log(result.data)
           //console.log(result.data.files)
           paths = result.data.files
@@ -70,7 +70,7 @@ jobs:
           core.setOutput('matrix', JSON.stringify(matrix))
 
 
-  Publish:
+  Deploy:
     runs-on: ubuntu-latest
     needs: Prerequisites
     if: ${{ needs.Prerequisites.outputs.flag == true }}
@@ -85,8 +85,18 @@ jobs:
         with:
           node-version: 12
 
+      - name: test
+        run: echo ${{ hashFiles(matrix.path/README.md) }}
+
+      - name: Add README 📝
+        if: ${{ hashFiles(matrix.path/README.md) != '' }}
+        run: |
+          cd ${{ matrix.path }}
+          echo "##Preview\nhttps://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ matrix.path }}" >> README.md
+
       - name: Install and Build 🔧
         run: |
+          echo $(pwd)
           cd ${{ matrix.path }}
           yarn
           PUBLIC_URL=./ yarn build
