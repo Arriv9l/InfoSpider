@@ -54,6 +54,7 @@ jobs:
                     .filter(Boolean)
           console.log(`paths1: ${paths}`)
           paths = paths.filter((item, index, array) => {
+                    console.log(array.indexOf(item) === index)
                     return array.indexOf(item) === index;
                 })
           console.log(`paths2: ${paths}`)
