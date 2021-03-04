@@ -23,7 +23,7 @@ jobs:
 
       - name: run
         run: |
-          npm install -g @actions/core, fs
+          npm install -g @actions/core fs
           node index.js
 
 
