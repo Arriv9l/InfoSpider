@@ -95,7 +95,7 @@ jobs:
       # https://github.com/marketplace/actions/add-commit
       - name: Auto Commit 📝
         uses: EndBug/add-and-commit@v7
-        if: ${{ steps.add-readme.outcome == 'skipped' }}
+        if: ${{ steps.add-readme.outcome != 'skipped' }}
         with:
           message: '📝 Auto add README'
           add: '${{ matrix.path }}/README.md'
