@@ -65,6 +65,8 @@ jobs:
       if: ${{ join(env.PATH) != '' }}
       with:
         script: |
+          console.log(${{ join(env.PATH) }})
+          console.log(${{ join(env.PATH, '3') }})
           const matrix = {}
           matrix.path = ${{ env.PATH }}
           core.setOutput('matrix', JSON.stringify(matrix))
