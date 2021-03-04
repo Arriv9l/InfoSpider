@@ -32,6 +32,7 @@ jobs:
     # 这三个属性已经被删除了，所以只能用 https://docs.github.com/en/rest/reference/repos#compare-two-commits
     - name: Get Filenames
       id: get-filenames
+      uses: actions/github-script@v3
       env:
         repository: ${{ github.repository }} # The owner and repository name. For example, Codertocat/Hello-World.
         before: ${{ github.event.before }}
@@ -39,11 +40,12 @@ jobs:
       # 关于 CLI Parse JSON，可以用 jq，教程见 https://stedolan.github.io/jq/tutorial/
       # 由于 $filenames 中有空格，所以在 set-output 时
       # 不能直接用 $filenames，而应该用 $( echo $filenames )
-      run: |
-        res=$( curl -s "https://api.github.com/repos/Arriv9l/InfoSpider/compare/28f0820fed838a9176e84c157f0e7a7e8482d336...a0282a6923a2d99d28bc3a3d8d5b1b8aaed75a21" )
-        filenames=$( echo $res | jq '.files[].filename' )
-        echo "filenames: $filenames"
-        echo "::set-output name=filenames::$( echo $filenames )"
+       with:
+        script: |
+          const result = await github.request("https://api.github.com/repos/Arriv9l/InfoSpider/compare/28f0820fed838a9176e84c157f0e7a7e8482d336...a0282a6923a2d99d28bc3a3d8d5b1b8aaed75a21")
+          console.log(result)
+          console.log(result.files)
+          console.log( ${{result.files.*.filename}} )
 
     - name: Get Paths
       id: get-paths
