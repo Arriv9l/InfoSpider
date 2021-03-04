@@ -18,8 +18,7 @@ jobs:
 
       - name: run
         run: |
-          npm init -y
-          npm install @actions/core, fs
+          npm -g install @actions/core, fs
           node index.js
 
 
