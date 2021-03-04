@@ -51,22 +51,21 @@ jobs:
                     .map(x => x.filename.match(/part\d\/.+?(?=\/)/))
                     .filter(Boolean)
                     .filter(x => {
-                      core.exportVariable('x', x);
+                      core.exportVariable('x', x)
                       return ${{ hashFiles(env.x) != '' }}
                     })
           console.log(`paths: ${paths}`)
           core.setOutput('paths', paths)
+          core.setOutput('flag', paths.length ? true : false)
 
     - name: Set Matrix
       id: set-matrix
       uses: actions/github-script@v3
       env:
         PATH: ${{ steps.get-paths.outputs.paths }}
-      if: ${{ join(env.PATH) != '' }}
+      if: ${{ steps.get-paths.outputs.flag }}
       with:
         script: |
-          console.log(${{ join(env.PATH) }})
-          console.log(${{ join(env.PATH, '3') }})
           const matrix = {}
           matrix.path = ${{ env.PATH }}
           core.setOutput('matrix', JSON.stringify(matrix))
