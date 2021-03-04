@@ -50,7 +50,8 @@ jobs:
           //console.log(result.data)
           //console.log(result.data.files)
           paths = result.data.files
-                    .map(x => x.filename.match(/part\d\/.+?(?=\/)/))
+                    .map(x => x.filename.match(/part\d(?=\/)/))
+                    .filter(Boolean)
           console.log(`paths1: ${paths}`)
           unique = []
           paths.forEach(x => {
