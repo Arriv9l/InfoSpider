@@ -106,7 +106,7 @@ jobs:
       # 实测发现自动发 commit 并不会再次触发 Actions，导致死循环
       - name: Auto Commit 📝
         uses: EndBug/add-and-commit@v7
-        if: ${{ steps.add-readme.outputs.readmes != [] }}
+        if: ${{ steps.add-readme.outputs.readmes != '[]' }}
         with:
           message: '📝 Auto Add README'
           add: ${{ steps.add-readme.outputs.readmes }}
