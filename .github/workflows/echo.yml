@@ -47,20 +47,13 @@ jobs:
               .filter((item, index, array) => array.indexOf(item) === index)
               .filter(x => fs.existsSync(x))
             core.setOutput('paths', paths)
-            test = []
-            core.setOutput('test', test)
-
-      - name: test
-        run: |
-          echo ${{ steps.get-paths.outputs.test == '[]' }}
-          echo ${{ join(steps.get-paths.outputs.test) == '[]' }}
 
       - name: Set Matrix
         id: set-matrix
         uses: actions/github-script@v3
         # 实测发现，当 flag 的值为布尔值 true 时，不能正常判断
         # 所以需要将 flag 改为字符串 'true'，再去判断 flag == 'true'
-        # 判断数组是否为空，用 '[]'
+        # 判断数组是否为空，用 '[]'，加不加 join() 都可以
         if: ${{ steps.get-paths.outputs.paths != '[]' }}
         with:
           script: |
@@ -72,7 +65,7 @@ jobs:
   README:
     runs-on: ubuntu-latest
     needs: Prerequisites
-    if: ${{ needs.Prerequisites.outputs.flag == 'true' }}
+    if: ${{ needs.Prerequisites.outputs.paths != '[]' }}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
@@ -108,7 +101,7 @@ jobs:
   Deploy:
     runs-on: ubuntu-latest
     needs: Prerequisites
-    if: ${{ needs.Prerequisites.outputs.flag != 'true' }}
+    if: ${{ needs.Prerequisites.outputs.paths != '[]' }}
     # 来自 https://github.community/t/check-pushed-file-changes-with-git-diff-tree-in-github-actions/17220/10
     strategy:
       matrix: ${{ fromJson(needs.Prerequisites.outputs.matrix) }}
