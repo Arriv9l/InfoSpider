@@ -49,6 +49,8 @@ jobs:
               .filter(x => fs.existsSync(x))
             core.setOutput('paths', paths)
             core.setOutput('flag', paths.length ? 'true' : 'false')
+            const test = []
+            core.setOutput('test', test)
 
       - name: test
         run: |
@@ -56,6 +58,10 @@ jobs:
           echo ${{ join(steps.get-paths.outputs.paths) }}
           echo ${{ join(steps.get-paths.outputs.paths) == '' }}
           echo ${{ join(steps.get-paths.outputs.paths) == '[]' }}
+          echo ${{ steps.get-paths.outputs.test }}
+          echo ${{ join(steps.get-paths.outputs.test) }}
+          echo ${{ join(steps.get-paths.outputs.test) == '' }}
+          echo ${{ join(steps.get-paths.outputs.test) == '[]' }}
 
       - name: Set Matrix
         id: set-matrix
@@ -82,7 +88,7 @@ jobs:
         uses: actions/github-script@v3
         with:
           script: |
-            const paths = core.getInput('paths')
+            const paths = ${{ needs.Prerequisites.outputs.paths }}
             console.log(paths)
 
       # 如果 README 不存在，自动创建；否则，跳过该 step
@@ -92,7 +98,7 @@ jobs:
         with:
           script: |
             const fs = require('fs')
-            const paths = core.getInput('paths').filter(path => !fs.existsSync(`${path}/README.md`))
+            const paths = ${{ needs.Prerequisites.outputs.paths }}.filter(path => !fs.existsSync(`${path}/README.md`))
             const readmes = paths.map(path => {
               const readme = `${path}/README.md`
               const text = `# Preview\nhttps://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${path}`
