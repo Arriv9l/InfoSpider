@@ -13,7 +13,6 @@ jobs:
     # 具体见 https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idoutputs
     outputs:
       paths: ${{ steps.get-paths.outputs.paths }}
-      flag: ${{ steps.get-paths.outputs.flag }}
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
     steps:
@@ -48,19 +47,12 @@ jobs:
               .filter((item, index, array) => array.indexOf(item) === index)
               .filter(x => fs.existsSync(x))
             core.setOutput('paths', paths)
-            core.setOutput('flag', paths.length ? 'true' : 'false')
-            const test = []
+            test = []
             core.setOutput('test', test)
 
       - name: test
         run: |
-          echo ${{ steps.get-paths.outputs.paths }}
-          echo ${{ join(steps.get-paths.outputs.paths) }}
-          echo ${{ join(steps.get-paths.outputs.paths) == '' }}
-          echo ${{ join(steps.get-paths.outputs.paths) == '[]' }}
-          echo ${{ steps.get-paths.outputs.test }}
-          echo ${{ join(steps.get-paths.outputs.test) }}
-          echo ${{ join(steps.get-paths.outputs.test) == '' }}
+          echo ${{ steps.get-paths.outputs.test == '[]' }}
           echo ${{ join(steps.get-paths.outputs.test) == '[]' }}
 
       - name: Set Matrix
@@ -68,7 +60,8 @@ jobs:
         uses: actions/github-script@v3
         # 实测发现，当 flag 的值为布尔值 true 时，不能正常判断
         # 所以需要将 flag 改为字符串 'true'，再去判断 flag == 'true'
-        if: ${{ steps.get-paths.outputs.flag == 'true' }}
+        # 判断数组是否为空，用 '[]'
+        if: ${{ steps.get-paths.outputs.paths != '[]' }}
         with:
           script: |
             const matrix = {}
@@ -83,13 +76,6 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-
-      - name: test
-        uses: actions/github-script@v3
-        with:
-          script: |
-            const paths = ${{ needs.Prerequisites.outputs.paths }}
-            console.log(paths)
 
       # 如果 README 不存在，自动创建；否则，跳过该 step
       - name: Add README 📝
@@ -106,13 +92,6 @@ jobs:
               return readme
             })
             core.setOutput('readmes', readmes)
-
-      - name: test2
-        run: |
-          echo ${{ steps.add-readme.outputs.readmes }}
-          echo ${{ join(steps.add-readme.outputs.readmes) }}
-          echo ${{ join(steps.add-readme.outputs.readmes) == '' }}
-          echo ${{ join(steps.add-readme.outputs.readmes) == '[]' }}
 
       # 根据 https://github.community/t/parameter-on-step-if-previous-skipped/18320/4
       # 来判断条件：如果上一个 step 被跳过，则此 step 也跳过
