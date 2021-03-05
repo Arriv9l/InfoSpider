@@ -96,8 +96,9 @@ jobs:
       - name: test2
         run: |
           echo ${{ steps.add-readme.outputs.readmes }}
-          echo ${{ steps.add-readme.outputs.readmes == '[]' }}
-          echo ${{ steps.add-readme.outputs.readmes == [] }}
+          echo ${{ join(steps.add-readme.outputs.readmes) }}
+          echo ${{ join(steps.add-readme.outputs.readmes) == '' }}
+          echo ${{ join(steps.add-readme.outputs.readmes) == '[]' }}
 
       # 根据 https://github.community/t/parameter-on-step-if-previous-skipped/18320/4
       # 来判断条件：如果上一个 step 被跳过，则此 step 也跳过
