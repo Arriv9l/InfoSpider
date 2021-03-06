@@ -19,6 +19,11 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+        run: echo "$GITHUB_CONTEXT"
+
       # 本来根据 https://docs.github.com/en/developers/webhooks-and-events/webhook-events-and-payloads#push
       # 和 https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#object-filters
       # 在 PUSH 中可以通过 ${{ github.event.commits.*.added }} 来获取 added,modified,removed 文件
@@ -31,16 +36,16 @@ jobs:
           repository: ${{ github.repository }} # The owner and repository name. For example, Codertocat/Hello-World.
           before: ${{ github.event.before }}
           after: ${{ github.event.after }}
-        # 根据 https://github.com/actions/github-script#download-data-from-a-url
+        # https://github.com/actions/github-script#download-data-from-a-url
         # 用 github.request() 来下载，result.data 已解析为 JSON
         # 注意 match 的用法：(.match() || [])[0]
         # 用 indexOf() 实现数组去重
         # 用 fs.existsSync() 判断文件是否存在
-        # 实测发现，可以直接用 require('fs')，但不能用 import
+        # 实测发现，可以直接用 require('fs')，但不能用 import，那是 TypeScript 的语法
         with:
           script: |
             const fs = require('fs')
-            const result = await github.request("https://api.github.com/repos/Arriv9l/InfoSpider/compare/81a324dd6eb7071a17c2baa82b62d409058c1e9d...cbde965224c81ff88663fcddd292ce5deb944d2a")
+            const result = await github.request("https://api.github.com/repos/${{ env.repository }}/compare/${{ env.before }}...${{ env.after }}")
             const paths = result.data.files
               .map(x => (x['filename'].match(/part\d\/.+?(?=\/)/) || [])[0])
               .filter(Boolean)
@@ -51,8 +56,6 @@ jobs:
       - name: Set Matrix
         id: set-matrix
         uses: actions/github-script@v3
-        # 实测发现，当 flag 的值为布尔值 true 时，不能正常判断
-        # 所以需要将 flag 改为字符串 'true'，再去判断 flag == 'true'
         # 判断数组是否为空，用 '[]'，加不加 join() 都可以
         if: ${{ steps.get-paths.outputs.paths != '[]' }}
         with:
@@ -70,7 +73,7 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # 如果 README 不存在，自动创建；否则，跳过该 step
+      # 自动创建所有缺失的 README
       - name: Add README 📝
         id: add-readme
         uses: actions/github-script@v3
@@ -86,9 +89,9 @@ jobs:
             })
             core.setOutput('readmes', readmes)
 
-      # 根据 https://github.community/t/parameter-on-step-if-previous-skipped/18320/4
-      # 来判断条件：如果上一个 step 被跳过，则此 step 也跳过
-      # 否则的话自动发 commit https://github.com/marketplace/actions/add-commit
+      # https://github.com/marketplace/actions/add-commit
+      # 如果 readmes 数组不为空，则自动发 commit
+      # commit 中添加的文件为数组，就避免了一个文件一个 commit，有点刷绿墙的嫌疑
       # 实测发现自动发 commit 并不会再次触发 Actions，导致死循环
       - name: Auto Commit 📝
         uses: EndBug/add-and-commit@v7
