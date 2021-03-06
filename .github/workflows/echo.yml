@@ -6,9 +6,8 @@ on:
   workflow_dispatch:
     inputs:
       url:
-        description: 'fetch'
+        description: 'URL to debug'
         required: true
-        default: "https://api.github.com/repos/${{ github.repository }}/compare/${{ github.event.before }}...${{ github.event.after }}"
 
 jobs:
   Prerequisites:
@@ -46,7 +45,9 @@ jobs:
         with:
           script: |
             const fs = require('fs')
-            const result = await github.request(${{ github.event.inputs.url }})
+            const url = ${{ github.event.inputs.url }} || "https://api.github.com/repos/${{ github.repository }}/compare/${{ github.event.before }}...${{ github.event.after }}"
+            console.log(`url: ${url}`)
+            const result = await github.request(url)
             const paths = result.data.files
               .map(x => (x['filename'].match(/part\d\/.+?(?=\/)/) || [])[0])
               .filter(Boolean)
