@@ -1,9 +1,19 @@
 name: test
 
+env:
+  repository: ${{ github.repository }} # The owner and repository name. For example, Codertocat/Hello-World.
+  before: ${{ github.event.before }}
+  after: ${{ github.event.after }}
+
 on:
   push:
     branches: [ test ]
   workflow_dispatch:
+    inputs:
+      url:
+        description: 'fetch'
+        required: true
+        default: "https://api.github.com/repos/${{ env.repository }}/compare/${{ env.before }}...${{ env.after }}"
 
 jobs:
   Prerequisites:
@@ -32,10 +42,6 @@ jobs:
       - name: Get Paths
         id: get-paths
         uses: actions/github-script@v3
-        env:
-          repository: ${{ github.repository }} # The owner and repository name. For example, Codertocat/Hello-World.
-          before: ${{ github.event.before }}
-          after: ${{ github.event.after }}
         # https://github.com/actions/github-script#download-data-from-a-url
         # 用 github.request() 来下载，result.data 已解析为 JSON
         # 注意 match 的用法：(.match() || [])[0]
@@ -45,7 +51,7 @@ jobs:
         with:
           script: |
             const fs = require('fs')
-            const result = await github.request("https://api.github.com/repos/${{ env.repository }}/compare/${{ env.before }}...${{ env.after }}")
+            const result = await github.request(${{ github.event.inputs.url }})
             const paths = result.data.files
               .map(x => (x['filename'].match(/part\d\/.+?(?=\/)/) || [])[0])
               .filter(Boolean)
