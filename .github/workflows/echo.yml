@@ -28,11 +28,11 @@ jobs:
         uses: actions/github-script@v3
         with:
           script: |
-            const obj = {
-              [folder: 'part1/1.1', targetFolder: 'part1/1.1/build'],
-              [folder: 'part2/2.2', targetFolder: 'part2/2.2/build'],
-              [folder: 'part3/3.3', targetFolder: 'part3/3.3/build'],
-            }
+            const obj = [
+              {folder: 'part1/1.1', targetFolder: 'part1/1.1/build'},
+              {folder: 'part2/2.2', targetFolder: 'part2/2.2/build'},
+              {folder: 'part3/3.3', targetFolder: 'part3/3.3/build'},
+            ]
             core.setOutput('obj', obj)
 
       - name: getObj
@@ -42,9 +42,13 @@ jobs:
             const branch = core.getInput('branch')
             console.log(`branch: ${branch}`)
             const obj = core.getInput('obj')
-            console.log(`branch: ${branch}`)
+            console.log(`obj: ${obj}`)
             obj.map(each => console.log(`${each.folder} ${each.targetFolder}`))
+            const test = core.getInput('test')
+            console.log(`test: ${test}`)
+            test.map(each => console.log(`${each.folder} ${each.targetFolder}`))
           branch: gh-pages
+          test: ${{ steps.set-obj.outputs.obj }}
 
       - name: Dump GitHub context
         env:
