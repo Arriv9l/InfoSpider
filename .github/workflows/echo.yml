@@ -33,6 +33,7 @@ jobs:
               {folder: 'part2/2.2', targetFolder: 'part2/2.2/build'},
               {folder: 'part3/3.3', targetFolder: 'part3/3.3/build'},
             ]
+            // core.setOutput('obj', JSON.stringify(obj))
             core.setOutput('obj', obj)
 
       - name: getObj
@@ -41,12 +42,18 @@ jobs:
           script: |
             const branch = core.getInput('previews')
             console.log(`branch: ${branch}`)
-            const obj = core.getInput('obj')
-            console.log(`obj: ${obj}`)
-            obj.map(each => console.log(`${each.folder} ${each.targetFolder}`))
-            const test = core.getInput('user-agent')
-            console.log(`test: ${test}`)
+
+            let test = core.getInput('user-agent')
+            console.log(`test-1: ${test}`)
+            test = JSON.parse(test)
+            console.log(`test-2: ${test}`)
             test.map(each => console.log(`${each.folder} ${each.targetFolder}`))
+            
+            let obj = core.getInput('obj')
+            console.log(`obj-1: ${obj}`)
+            obj = JSON.parse(obj)
+            console.log(`obj-2: ${obj}`)
+            obj.map(each => console.log(`${each.folder} ${each.targetFolder}`))
           previews: gh-pages
           user-agent: ${{ steps.set-obj.outputs.obj }}
 
