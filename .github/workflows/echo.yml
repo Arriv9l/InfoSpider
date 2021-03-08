@@ -39,16 +39,16 @@ jobs:
         uses: actions/github-script@v3
         with:
           script: |
-            const branch = core.getInput('branch')
+            const branch = core.getInput('previews')
             console.log(`branch: ${branch}`)
             const obj = core.getInput('obj')
             console.log(`obj: ${obj}`)
             obj.map(each => console.log(`${each.folder} ${each.targetFolder}`))
-            const test = core.getInput('test')
+            const test = core.getInput('user-agent')
             console.log(`test: ${test}`)
             test.map(each => console.log(`${each.folder} ${each.targetFolder}`))
-          branch: gh-pages
-          test: ${{ steps.set-obj.outputs.obj }}
+          previews: gh-pages
+          user-agent: ${{ steps.set-obj.outputs.obj }}
 
       - name: Dump GitHub context
         env:
