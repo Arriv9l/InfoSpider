@@ -23,6 +23,29 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      - name: setObj
+        id: set-obj
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const obj = {
+              [folder: 'part1/1.1', targetFolder: 'part1/1.1/build'],
+              [folder: 'part2/2.2', targetFolder: 'part2/2.2/build'],
+              [folder: 'part3/3.3', targetFolder: 'part3/3.3/build'],
+            }
+            core.setOutput('obj', obj)
+
+      - name: getObj
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const branch = core.getInput('branch')
+            console.log(`branch: ${branch}`)
+            const obj = core.getInput('obj')
+            console.log(`branch: ${branch}`)
+            obj.map(each => console.log(`${each.folder} ${each.targetFolder}`))
+          branch: gh-pages
+
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
@@ -115,6 +138,9 @@ jobs:
       - uses: actions/checkout@v2
 
       # https://github.com/actions/cache/blob/main/examples.md#node---yarn
+      # 实测发现，加上缓存后，时间由 60s 缩短到了 30s
+      # 但以后的话，最好在 PUSH 时加上 yarn.lock 文件
+      # 不过不加的话应该也无所谓吧，有待测试
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
