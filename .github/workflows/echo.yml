@@ -23,30 +23,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: setObj
-        id: set-obj
-        uses: actions/github-script@v3
-        with:
-          script: |
-            const obj = [
-              {folder: 'part1/1.1', targetFolder: 'part1/1.1/build'},
-              {folder: 'part2/2.2', targetFolder: 'part2/2.2/build'},
-              {folder: 'part3/3.3', targetFolder: 'part3/3.3/build'},
-            ]
-            core.setOutput('obj', JSON.stringify(obj))
-            // core.setOutput('obj', obj)
-
-      - name: getObj
-        uses: actions/github-script@v3
-        with:
-          script: |
-            let test = core.getInput('user-agent')
-            console.log(`test-1: ${test}`)
-            test = JSON.parse(test)
-            console.log(`test-2: ${test}`)
-            test.map(each => console.log(`${each.folder} ${each.targetFolder}`))
-          user-agent: ${{ steps.set-obj.outputs.obj }}
-
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
@@ -126,7 +102,7 @@ jobs:
           add: ${{ steps.add-readme.outputs.readmes }}
 
 
-  Deploy:
+  Build:
     runs-on: ubuntu-latest
     needs: Prerequisites
     if: ${{ needs.Prerequisites.outputs.paths != '[]' }}
@@ -165,10 +141,29 @@ jobs:
           yarn
           PUBLIC_URL=./ yarn build
 
+
+  Deploy:
+    runs-on: ubuntu-latest
+    needs: Prerequisites
+    if: ${{ needs.Prerequisites.outputs.paths != '[]' }}
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: setFolderMap
+        id: set-folderMap
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const paths = ${{ needs.Prerequisites.outputs.paths }}
+            const folderMap = paths.map(path => {
+              folder: `${path}/build`,
+              targetFolder: path,
+            })
+            core.setOutput('folderMap', JSON.stringify(folderMap)) // 也可以不用 JSON.stringify()
+
       - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@4.0.0
+        uses: Arriv9l/github-pages-deploy-action
         with:
           branch: gh-pages
-          folder: ${{ matrix.path }}/build
-          target-folder: ${{ matrix.path }}
-          clean: false
+          folder-map: ${{ steps.set-folderMap.outputs.folderMap }}
