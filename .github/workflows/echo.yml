@@ -150,16 +150,17 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      # 此处要注意在 {} 外面加上 ()
       - name: setFolderMap
         id: set-folderMap
         uses: actions/github-script@v3
         with:
           script: |
             const paths = ${{ needs.Prerequisites.outputs.paths }}
-            const folderMap = paths.map(path => {
+            const folderMap = paths.map(path => ({
               folder: `${path}/build`,
               targetFolder: path,
-            })
+            }))
             core.setOutput('folderMap', JSON.stringify(folderMap)) // 也可以不用 JSON.stringify()
 
       - name: Deploy 🚀
