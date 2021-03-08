@@ -33,8 +33,8 @@ jobs:
               {folder: 'part2/2.2', targetFolder: 'part2/2.2/build'},
               {folder: 'part3/3.3', targetFolder: 'part3/3.3/build'},
             ]
-            // core.setOutput('obj', JSON.stringify(obj))
-            core.setOutput('obj', obj)
+            core.setOutput('obj', JSON.stringify(obj))
+            // core.setOutput('obj', obj)
 
       - name: getObj
         uses: actions/github-script@v3
@@ -42,7 +42,6 @@ jobs:
           script: |
             let test = core.getInput('user-agent')
             console.log(`test-1: ${test}`)
-            test.map(each => console.log(`${each.folder} ${each.targetFolder}`))
             test = JSON.parse(test)
             console.log(`test-2: ${test}`)
             test.map(each => console.log(`${each.folder} ${each.targetFolder}`))
