@@ -163,7 +163,7 @@ jobs:
             core.setOutput('folderMap', JSON.stringify(folderMap)) // 也可以不用 JSON.stringify()
 
       - name: Deploy 🚀
-        uses: Arriv9l/github-pages-deploy-action
+        uses: Arriv9l/github-pages-deploy-action@v5
         with:
           branch: gh-pages
           folder-map: ${{ steps.set-folderMap.outputs.folderMap }}
