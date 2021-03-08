@@ -40,21 +40,12 @@ jobs:
         uses: actions/github-script@v3
         with:
           script: |
-            const branch = core.getInput('previews')
-            console.log(`branch: ${branch}`)
-
             let test = core.getInput('user-agent')
             console.log(`test-1: ${test}`)
+            test.map(each => console.log(`${each.folder} ${each.targetFolder}`))
             test = JSON.parse(test)
             console.log(`test-2: ${test}`)
             test.map(each => console.log(`${each.folder} ${each.targetFolder}`))
-            
-            let obj = core.getInput('obj')
-            console.log(`obj-1: ${obj}`)
-            obj = JSON.parse(obj)
-            console.log(`obj-2: ${obj}`)
-            obj.map(each => console.log(`${each.folder} ${each.targetFolder}`))
-          previews: gh-pages
           user-agent: ${{ steps.set-obj.outputs.obj }}
 
       - name: Dump GitHub context
