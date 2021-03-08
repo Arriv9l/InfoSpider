@@ -144,7 +144,7 @@ jobs:
 
   Deploy:
     runs-on: ubuntu-latest
-    needs: Prerequisites
+    needs: [ Prerequisites, Build ]
     if: ${{ needs.Prerequisites.outputs.paths != '[]' }}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
