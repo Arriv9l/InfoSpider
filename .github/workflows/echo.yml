@@ -164,7 +164,16 @@ jobs:
             core.setOutput('folderMap', JSON.stringify(folderMap)) // 也可以不用 JSON.stringify()
 
       - name: Deploy 🚀
-        uses: Arriv9l/github-pages-deploy-action@v5
+        uses: Arriv9l/github-pages-deploy-action@v1.0
         with:
           branch: gh-pages
+          folder: test
           folder-map: ${{ steps.set-folderMap.outputs.folderMap }}
+
+    Test:
+      runs-on: ubuntu-latest
+      needs: Prerequisites
+      steps:
+        # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+        - uses: actions/checkout@v2
+        - run: echo ${{ needs.Prerequisites.outputs.paths[0] }}/build
