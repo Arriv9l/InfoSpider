@@ -180,11 +180,11 @@ jobs:
           script: |
             const paths = ${{ needs.Prerequisites.outputs.paths }}
             const folderMap = paths.map(path => ({
-              folder: `${path.replace('/', '-')}-build`,
+              folder: `${path}/build`.replace(/\//g, '-'),
               targetFolder: path,
             }))
             core.setOutput('folderMap', JSON.stringify(folderMap)) // 也可以不用 JSON.stringify()
-            core.setOutput('folder', `${paths[0]}/build`)
+            core.setOutput('folder', `${paths[0]}/build`.replace(/\//g, '-'))
 
       # 实测发现，folder 不能用 ${{ needs.Prerequisites.outputs.paths[0] }}/build
       # 估计是因为 paths 是字符串而非数组吧
