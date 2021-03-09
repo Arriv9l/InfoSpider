@@ -162,10 +162,13 @@ jobs:
               targetFolder: path,
             }))
             core.setOutput('folderMap', JSON.stringify(folderMap)) // 也可以不用 JSON.stringify()
+            core.setOutput('folder', `${paths[0]}/build`)
 
+      # 实测发现，folder 不能用 ${{ needs.Prerequisites.outputs.paths[0] }}/build
+      # 估计是因为 paths 是字符串而非数组吧
       - name: Deploy 🚀
         uses: Arriv9l/github-pages-deploy-action@v1.0
         with:
           branch: gh-pages
-          folder: ${{ needs.Prerequisites.outputs.paths[0] }}/build
+          folder: ${{ steps.set-folderMap.outputs.folder }}
           folder-map: ${{ steps.set-folderMap.outputs.folderMap }}
