@@ -146,7 +146,7 @@ jobs:
         uses: actions/github-script@v3
         with:
           script: |
-            core.setOutput('name', '${{ matrix.path }}/build'.replaceAll('/', '-'))
+            core.setOutput('name', '${{ matrix.path }}/build'.replace(/\//g, '-'))
 
       # https://github.com/actions/upload-artifact#too-many-uploads-resulting-in-429-responses
       # As an example, imagine an artifact with 1000 files (each 10 Kb in size).
