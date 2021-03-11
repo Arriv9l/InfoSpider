@@ -1,9 +1,7 @@
 name: test
 
 env:
-  heroku:
-    - part3
-    - part4
+  heroku: [ part3, part4 ]
 
 on:
   push:
