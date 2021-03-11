@@ -30,7 +30,10 @@ jobs:
       - name: test1
         run: |
           npm install haikunator
-          node -e 'console.log( require("./node_modules/haikunator").haikunate() )'
+          node -e "const Haikunator = require('./node_modules/haikunator'); \
+                   const haikunator = new Haikunator(); \
+                   const name = haikunator.haikunate();
+                   console.log(name)"
 
       - name: test
         id: set-test
