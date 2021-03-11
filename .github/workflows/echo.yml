@@ -28,12 +28,19 @@ jobs:
           node-version: 12
 
       - name: test1
+        id: get1
         run: |
           npm install haikunator
+          echo "::set-output name=num::123"
           node -e "const Haikunator = require('./node_modules/haikunator'); \
                    const haikunator = new Haikunator(); \
                    const name = haikunator.haikunate();
-                   console.log(name)"
+                   console.log(`::set-output name=name::${name}`)"
+
+      - name: test2
+        run: |
+          echo ${{ steps.get1.outputs.num }}
+          echo ${{ steps.get1.outputs.name }}
 
       - name: test
         id: set-test
