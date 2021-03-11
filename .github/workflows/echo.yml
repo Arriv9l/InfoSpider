@@ -29,8 +29,8 @@ jobs:
 
       - name: test1
         run: |
-        npm install -g haikunator
-        node -e 'console.log( require("haikunator").haikunate() )'
+          npm install -g haikunator
+          node -e 'console.log( require("haikunator").haikunate() )'
 
       - name: test
         id: set-test
