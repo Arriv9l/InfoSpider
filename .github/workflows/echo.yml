@@ -32,10 +32,11 @@ jobs:
         run: |
           npm install haikunator
           echo "::set-output name=num::123"
-          node -e "const Haikunator = require('./node_modules/haikunator'); \
-                   const haikunator = new Haikunator(); \
-                   const name = haikunator.haikunate();
-                   console.log(`::set-output name=name::${name}`)"
+          name=$(node -e "const Haikunator = require('./node_modules/haikunator'); \
+                          const haikunator = new Haikunator(); \
+                          const name = haikunator.haikunate();
+                          console.log(name)")
+          echo "::set-output name=name::$name"
 
       - name: test2
         run: |
