@@ -1,8 +1,5 @@
 name: test
 
-env:
-  heroku: [ part3, part4 ]
-
 on:
   push:
     branches: [ test ]
@@ -30,14 +27,6 @@ jobs:
         run: |
           echo ${{ env.heroku.* }}
 
-      - name: test3
-        uses: actions/github-script@v3
-        with:
-          script: |
-            ${{ env.heroku.* }}.map(x => console.log(x))
-            a = ['part1','part2','part3','part4','part5'].filter(x => !${{ env.heroku.* }}.includes(x))
-            console.log('a:', a)
-
       # https://github.com/Atrox/haikunatorjs
       # 没有当前路径下没有 package.json，所以必须以 require('./node_modules/xxx') 的方式导入模块
       # 哪怕用 npm install -g 的方式全局安装，也不能用 require('xxx')
@@ -52,6 +41,13 @@ jobs:
                           const name = haikunator.haikunate();
                           console.log(name)")
           echo "::set-output name=name::$name"
+
+      - name: Deploy to Heroku
+        env:
+          HEROKU_API_TOKEN: ${{ secrets.HEROKU_API_TOKEN }}
+          HEROKU_APP_NAME: ${{ steps.get-name.outputs.name }}
+        if: github.ref == 'refs/heads/master' && job.status == 'success'
+        run: git subtree push --prefix part3/3.1 https://heroku:$HEROKU_API_TOKEN@git.heroku.com/$HEROKU_APP_NAME.git test
 
       - name: test2
         run: |
