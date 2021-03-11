@@ -16,32 +16,56 @@ jobs:
     # 而 jobs 之间传递则需要靠 ${{needs.job1.outputs.output1}}
     # 具体见 https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idoutputs
     outputs:
-      paths: ${{ steps.get-paths.outputs.paths }}
+      heroku-paths: ${{ steps.get-paths.outputs.heroku-paths }}
+      pages-paths: ${{ steps.get-paths.outputs.pages-paths }}
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: test
-        run: |
-          echo ${{ env.heroku.* }}
+      - name: ttt 📝
+        id: ttt
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const a = ['1','2','3']
+            const b = ['4','5','6']
+            core.setOutput('a', a)
+            core.setOutput('b', b)
+
+      - name: ttt2 📝
+        id: add-ttt2
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const paths = [...${{ steps.ttt.outputs.a }}, ...${{ steps.ttt.outputs.b }}]
+              .map(x => console.log(x))
 
       # https://github.com/Atrox/haikunatorjs
       # 没有当前路径下没有 package.json，所以必须以 require('./node_modules/xxx') 的方式导入模块
       # 哪怕用 npm install -g 的方式全局安装，也不能用 require('xxx')
       # BTW，如果要想用 -g 全局安装，必须加上 actions/setup-node@v2
       # Also，本来以为多行代码要在末尾用 \ 反斜杠的，实测发现可用可不用
+      # Lastly，根据 https://nodejs.org/api/cli.html#cli_e_eval_script，
+      # 在 Windows node -e '' 单引号并不起作用，所以最好统一用 "" 双引号
       - name: Get Heroku-like Random Name
         id: get-name
         run: |
           npm install haikunator
-          name=$(node -e "const Haikunator = require('./node_modules/haikunator');
-                          const haikunator = new Haikunator();
-                          const name = haikunator.haikunate();
+          name=$(node -e "const Haikunator = require('./node_modules/haikunator')
+                          const haikunator = new Haikunator()
+                          const name = haikunator.haikunate()
                           console.log(name)")
           echo "::set-output name=name::$name"
           echo $(git remote)
+
+      - name: ttt3 📝
+        id: add-ttt2
+        uses: actions/github-script@v3
+        with:
+          script: |
+            require('haikunator')
 
       - name: Deploy to Heroku
         env:
@@ -87,13 +111,16 @@ jobs:
               .filter(Boolean)
               .filter((item, index, array) => array.indexOf(item) === index)
               .filter(x => fs.existsSync(x))
-            core.setOutput('paths', paths)
+            const herokuPaths = paths.filter(path => fs.existsSync(`${path}/Procfile`))
+            const pagesPaths = paths.filter(path => !herokuPaths.includes(path))
+            core.setOutput('heroku-paths', herokuPaths)
+            core.setOutput('pages-paths', pagesPaths)
 
       - name: Set Matrix
         id: set-matrix
         uses: actions/github-script@v3
         # 判断数组是否为空，用 '[]'，加不加 join() 都可以
-        if: ${{ steps.get-paths.outputs.paths != '[]' }}
+        if: ${{ steps.get-paths.outputs.pages-paths != '[]' }}
         with:
           script: |
             const matrix = {}
