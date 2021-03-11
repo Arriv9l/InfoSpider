@@ -41,15 +41,20 @@ jobs:
                           const name = haikunator.haikunate();
                           console.log(name)")
           echo "::set-output name=name::$name"
+          echo $(git remote)
 
       - name: Deploy to Heroku
         env:
           HEROKU_API_TOKEN: ${{ secrets.HEROKU_API_TOKEN }}
           HEROKU_APP_NAME: ${{ steps.get-name.outputs.name }}
-        run: git subtree push --prefix part3/3.1 https://heroku:$HEROKU_API_TOKEN@git.heroku.com/$HEROKU_APP_NAME.git test
+        run: |
+          git remote add heroku https://heroku:$HEROKU_API_TOKEN@git.heroku.com/$HEROKU_APP_NAME.git
+          echo $(git remote)
+          git subtree push --prefix part3/3.1 heroku test
 
       - name: test2
         run: |
+          echo $(git remote)
           echo ${{ steps.get-name.outputs.num }}
           echo ${{ steps.get-name.outputs.name }}
 
