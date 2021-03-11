@@ -1,5 +1,10 @@
 name: test
 
+env:
+  heroku:
+    - part3
+    - part4
+
 on:
   push:
     branches: [ test ]
@@ -23,45 +28,37 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 12
+      - name: test
+        run: |
+          echo ${{ env.heroku.* }}
 
-      - name: test1
-        id: get1
+      - name: test3
+        uses: actions/github-script@v3
+        with:
+          script: |
+            ${{ env.heroku.* }}.map(x => console.log(x))
+            a = ['part1','part2','part3','part4','part5'].filter(x => !${{ env.heroku.* }}.includes(x))
+            console.log('a:', a)
+
+      # https://github.com/Atrox/haikunatorjs
+      # 没有当前路径下没有 package.json，所以必须以 require('./node_modules/xxx') 的方式导入模块
+      # 哪怕用 npm install -g 的方式全局安装，也不能用 require('xxx')
+      # BTW，如果要想用 -g 全局安装，必须加上 actions/setup-node@v2
+      # Also，本来以为多行代码要在末尾用 \ 反斜杠的，实测发现可用可不用
+      - name: Get Heroku-like Random Name
+        id: get-name
         run: |
           npm install haikunator
-          echo "::set-output name=num::123"
-          name=$(node -e "const Haikunator = require('./node_modules/haikunator'); \
-                          const haikunator = new Haikunator(); \
+          name=$(node -e "const Haikunator = require('./node_modules/haikunator');
+                          const haikunator = new Haikunator();
                           const name = haikunator.haikunate();
                           console.log(name)")
           echo "::set-output name=name::$name"
 
       - name: test2
         run: |
-          echo ${{ steps.get1.outputs.num }}
-          echo ${{ steps.get1.outputs.name }}
-
-      - name: test
-        id: set-test
-        uses: actions/github-script@v3
-        with:
-          script: |
-            const Haikunator = require('haikunator')
-            const name = haikunator.haikunate()
-            console.log('name: ', name)
-
-      - name: Set up Ruby 2.6
-        uses: actions/setup-ruby@v1
-        with:
-          ruby-version: 2.6
-
-      - name: Build and test
-        run: |
-          gem install haikunator
-          ruby -r result -e "puts Haikunator.haikunate"
-          echo $result
+          echo ${{ steps.get-name.outputs.num }}
+          echo ${{ steps.get-name.outputs.name }}
 
       - name: Dump GitHub context
         env:
