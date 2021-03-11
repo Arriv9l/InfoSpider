@@ -78,18 +78,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: test
-        run: |
-          echo ${{ needs.Prerequisites.outputs.pages-paths }}
-          echo ${{ needs.Prerequisites.outputs.pages-paths != '[]' }}
-          echo ${{ needs.Prerequisites.outputs.heroku-paths }}
-          echo ${{ needs.Prerequisites.outputs.heroku-paths != '[]' }}
-          echo ${{ needs.Prerequisites.outputs.heroku-paths != '[]' || needs.Prerequisites.outputs.pages-paths != '[]' }}
-
-      - name: test2
-        if: ${{ needs.Prerequisites.outputs.heroku-paths != '[]' || needs.Prerequisites.outputs.pages-paths != '[]' }}
-        run: echo test
-
       # https://github.com/actions/cache/blob/main/examples.md#node---yarn
       # 实测发现，加上缓存后，时间由 60s 缩短到了 30s
       # 但以后的话，最好在 PUSH 时加上 yarn.lock 文件
@@ -212,7 +200,9 @@ jobs:
 
   README:
     runs-on: ubuntu-latest
-    needs: [ Prerequisites, Deploy-Pages, Deploy-Heroku ]
+    # 很尴尬，needs 不能二选一，既然 always() 可以，为啥我的 if 条件表达式就不行？？？
+    # 无奈我只能先去掉 Deploy-Heroku
+    needs: [ Prerequisites, Deploy-Pages ]
     if: ${{ needs.Prerequisites.outputs.pages-paths != '[]' || needs.Prerequisites.outputs.heroku-paths != '[]' }}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
