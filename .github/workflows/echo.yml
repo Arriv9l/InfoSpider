@@ -61,7 +61,6 @@ jobs:
           echo $(git remote)
 
       - name: ttt3 📝
-        id: add-ttt2
         uses: actions/github-script@v3
         with:
           script: |
