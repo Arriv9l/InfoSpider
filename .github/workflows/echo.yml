@@ -23,13 +23,12 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      - run: npm install haikunator
       - name: test
         id: set-test
         uses: actions/github-script@v3
         with:
           script: |
-            const fs = require('fs')
-            console.log('fs: ', fs)
             const Haikunator = require('haikunator')
             const name = haikunator.haikunate()
             console.log('name: ', name)
