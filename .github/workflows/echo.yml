@@ -27,7 +27,11 @@ jobs:
         with:
           node-version: 12
 
-      - run: npm install -g haikunator
+      - name: test1
+        run: |
+        npm install -g haikunator
+        node -e 'console.log( require("haikunator").haikunate() )'
+
       - name: test
         id: set-test
         uses: actions/github-script@v3
